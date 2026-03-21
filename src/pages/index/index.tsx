@@ -61,6 +61,13 @@ const HomePage: FC = () => {
             <View className="p-2">
               <Text className="block text-xl">📷</Text>
             </View>
+            {/* 后台管理入口 */}
+            <View 
+              className="p-2"
+              onClick={() => Taro.navigateTo({ url: '/pages/admin/index' })}
+            >
+              <Text className="block text-xl">⚙️</Text>
+            </View>
           </View>
         </View>
       </View>

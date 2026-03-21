@@ -1,9 +1,24 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, UseInterceptors, UploadedFile, HttpCode } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import { AdminService } from './admin.service';
 
 @Controller('admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
+
+  // ==================== 文件上传接口 ====================
+  
+  @Post('upload')
+  @HttpCode(200)
+  @UseInterceptors(FileInterceptor('file', {
+    storage: memoryStorage(),
+    limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
+  }))
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    console.log('上传文件:', file.originalname, file.mimetype, file.size);
+    return this.adminService.uploadFile(file);
+  }
 
   // ==================== 分类接口 ====================
   
@@ -161,6 +176,9 @@ export class AdminController {
     fitId?: number;
     styleId?: number;
     sortOrder?: number;
+    detailImages?: string;
+    videos?: string;
+    photos?: string;
   }) {
     return this.adminService.createProduct(body);
   }
@@ -180,6 +198,9 @@ export class AdminController {
       styleId: number;
       sortOrder: number;
       isActive: boolean;
+      detailImages: string;
+      videos: string;
+      photos: string;
     }>,
   ) {
     return this.adminService.updateProduct(id, body);

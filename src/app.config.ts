@@ -3,7 +3,8 @@ export default defineAppConfig({
     'pages/index/index',
     'pages/category/index',
     'pages/design/index',
-    'pages/product-detail/index'
+    'pages/product-detail/index',
+    'pages/admin/index'
   ],
   window: {
     backgroundTextStyle: 'light',

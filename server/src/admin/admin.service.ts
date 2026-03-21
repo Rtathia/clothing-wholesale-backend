@@ -1,8 +1,53 @@
 import { Injectable } from '@nestjs/common';
+import { S3Storage } from 'coze-coding-dev-sdk';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
 
 @Injectable()
 export class AdminService {
+  private storage: S3Storage;
+
+  constructor() {
+    this.storage = new S3Storage({
+      endpointUrl: process.env.COZE_BUCKET_ENDPOINT_URL,
+      accessKey: '',
+      secretKey: '',
+      bucketName: process.env.COZE_BUCKET_NAME,
+      region: 'cn-beijing',
+    });
+  }
+
+  // ==================== 文件上传 ====================
+  
+  async uploadFile(file: Express.Multer.File) {
+    if (!file || !file.buffer) {
+      throw new Error('文件内容为空');
+    }
+
+    // 生成文件名
+    const ext = file.originalname.split('.').pop() || 'bin';
+    const fileName = `products/${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
+
+    // 上传到对象存储
+    const fileKey = await this.storage.uploadFile({
+      fileContent: file.buffer,
+      fileName,
+      contentType: file.mimetype,
+    });
+
+    // 生成访问URL（有效期30天）
+    const url = await this.storage.generatePresignedUrl({
+      key: fileKey,
+      expireTime: 2592000, // 30天
+    });
+
+    return {
+      key: fileKey,
+      url,
+      originalName: file.originalname,
+      size: file.size,
+      mimetype: file.mimetype,
+    };
+  }
   // ==================== 分类管理 ====================
   
   // 获取所有分类
@@ -356,6 +401,9 @@ export class AdminService {
     fitId?: number;
     styleId?: number;
     sortOrder?: number;
+    detailImages?: string;
+    videos?: string;
+    photos?: string;
   }) {
     const client = getSupabaseClient();
     const { data, error } = await client
@@ -371,6 +419,9 @@ export class AdminService {
         fit_id: dto.fitId,
         style_id: dto.styleId,
         sort_order: dto.sortOrder || 0,
+        detail_images: dto.detailImages || '[]',
+        videos: dto.videos || '[]',
+        photos: dto.photos || '[]',
       })
       .select()
       .single();
@@ -391,6 +442,9 @@ export class AdminService {
     styleId: number;
     sortOrder: number;
     isActive: boolean;
+    detailImages: string;
+    videos: string;
+    photos: string;
   }>) {
     const client = getSupabaseClient();
     const updateData: Record<string, unknown> = {};
@@ -404,6 +458,10 @@ export class AdminService {
     if (dto.fitId !== undefined) updateData.fit_id = dto.fitId;
     if (dto.styleId !== undefined) updateData.style_id = dto.styleId;
     if (dto.sortOrder !== undefined) updateData.sort_order = dto.sortOrder;
+    if (dto.isActive !== undefined) updateData.is_active = dto.isActive;
+    if (dto.detailImages !== undefined) updateData.detail_images = dto.detailImages;
+    if (dto.videos !== undefined) updateData.videos = dto.videos;
+    if (dto.photos !== undefined) updateData.photos = dto.photos;
     if (dto.isActive !== undefined) updateData.is_active = dto.isActive;
     
     const { data, error } = await client
