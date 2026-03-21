@@ -8,43 +8,99 @@ import './index.css'
 
 // 颜色选项
 const colorOptions = [
-  { id: 'white', name: '白色', color: '#ffffff', border: true },
-  { id: 'black', name: '黑色', color: '#1a1a1a', border: false },
-  { id: 'navy', name: '藏青', color: '#1e3a5f', border: false },
-  { id: 'gray', name: '深灰', color: '#4a4a4a', border: false },
-  { id: 'light-gray', name: '浅灰', color: '#c0c0c0', border: true },
-  { id: 'red', name: '红色', color: '#dc2626', border: false },
-  { id: 'blue', name: '蓝色', color: '#2563eb', border: false },
-  { id: 'green', name: '绿色', color: '#16a34a', border: false },
+  { id: 'white', name: '白色', color: '#ffffff', filter: 'brightness(1)', border: true },
+  { id: 'black', name: '黑色', color: '#1a1a1a', filter: 'brightness(0.1)', border: false },
+  { id: 'navy', name: '藏青', color: '#1e3a5f', filter: 'brightness(0.4) sepia(1) saturate(3) hue-rotate(180deg)', border: false },
+  { id: 'gray', name: '深灰', color: '#4a4a4a', filter: 'brightness(0.4)', border: false },
+  { id: 'light-gray', name: '浅灰', color: '#c0c0c0', filter: 'brightness(0.85)', border: true },
+  { id: 'red', name: '红色', color: '#dc2626', filter: 'brightness(0.6) sepia(1) saturate(5) hue-rotate(-30deg)', border: false },
+  { id: 'blue', name: '蓝色', color: '#2563eb', filter: 'brightness(0.5) sepia(1) saturate(5) hue-rotate(200deg)', border: false },
+  { id: 'green', name: '绿色', color: '#16a34a', filter: 'brightness(0.5) sepia(1) saturate(5) hue-rotate(80deg)', border: false },
 ]
 
 // Logo位置选项
 const logoPositions = [
-  { id: 'left-sleeve', name: '左袖', viewBox: 'front' },
-  { id: 'right-sleeve', name: '右袖', viewBox: 'front' },
-  { id: 'front', name: '正面', viewBox: 'front' },
-  { id: 'back', name: '背面', viewBox: 'back' },
+  { id: 'left-sleeve', name: '左袖', type: 'sleeve' },
+  { id: 'right-sleeve', name: '右袖', type: 'sleeve' },
+  { id: 'front', name: '正面', type: 'body' },
+  { id: 'back', name: '背面', type: 'body' },
 ]
 
-// 设计区域配置（相对位置百分比）
-const designAreas = {
-  'left-sleeve': { top: '18%', left: '8%', width: '18%', height: '15%' },
-  'right-sleeve': { top: '18%', left: '74%', width: '18%', height: '15%' },
-  'front': { top: '25%', left: '30%', width: '40%', height: '35%' },
-  'back': { top: '20%', left: '30%', width: '40%', height: '40%' },
-}
+// 白色T恤基础图（使用base64 SVG，确保跨端可用）
+const TSHIRT_FRONT = 'data:image/svg+xml;base64,' + btoa(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 350">
+  <defs>
+    <linearGradient id="shadow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f5f5f5"/>
+      <stop offset="100%" style="stop-color:#e8e8e8"/>
+    </linearGradient>
+  </defs>
+  <!-- T恤主体 -->
+  <path d="M75,60 L45,75 L15,120 L35,135 L55,105 L55,320 L245,320 L245,105 L265,135 L285,120 L255,75 L225,60 L195,60 Q150,90 105,60 L75,60 Z" 
+        fill="white" stroke="#ddd" stroke-width="2"/>
+  <!-- 领口 -->
+  <ellipse cx="150" cy="65" rx="45" ry="15" fill="#f8f8f8" stroke="#ddd" stroke-width="2"/>
+  <path d="M120,65 L150,100 L180,65" fill="none" stroke="#ddd" stroke-width="2"/>
+  <!-- 袖口线 -->
+  <path d="M55,105 Q75,95 95,105" fill="none" stroke="#ddd" stroke-width="1"/>
+  <path d="M245,105 Q225,95 205,105" fill="none" stroke="#ddd" stroke-width="1"/>
+</svg>
+`)
+
+const TSHIRT_BACK = 'data:image/svg+xml;base64,' + btoa(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 350">
+  <defs>
+    <linearGradient id="shadow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f5f5f5"/>
+      <stop offset="100%" style="stop-color:#e8e8e8"/>
+    </linearGradient>
+  </defs>
+  <!-- T恤主体 -->
+  <path d="M75,60 L45,75 L15,120 L35,135 L55,105 L55,320 L245,320 L245,105 L265,135 L285,120 L255,75 L225,60 L195,60 Q150,80 105,60 L75,60 Z" 
+        fill="white" stroke="#ddd" stroke-width="2"/>
+  <!-- 后领口 -->
+  <ellipse cx="150" cy="65" rx="45" ry="12" fill="#f8f8f8" stroke="#ddd" stroke-width="2"/>
+  <!-- 袖口线 -->
+  <path d="M55,105 Q75,95 95,105" fill="none" stroke="#ddd" stroke-width="1"/>
+  <path d="M245,105 Q225,95 205,105" fill="none" stroke="#ddd" stroke-width="1"/>
+</svg>
+`)
+
+// 袖子图
+const SLEEVE_LEFT = 'data:image/svg+xml;base64,' + btoa(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 150">
+  <!-- 左袖 -->
+  <path d="M10,20 L5,25 L0,50 L15,55 L30,35 L35,10 L100,10 L100,130 L10,130 Z" 
+        fill="white" stroke="#ddd" stroke-width="2"/>
+  <path d="M30,35 Q45,30 55,40" fill="none" stroke="#ddd" stroke-width="1"/>
+</svg>
+`)
+
+const SLEEVE_RIGHT = 'data:image/svg+xml;base64,' + btoa(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 150">
+  <!-- 右袖 -->
+  <path d="M110,20 L115,25 L120,50 L105,55 L90,35 L85,10 L20,10 L20,130 L110,130 Z" 
+        fill="white" stroke="#ddd" stroke-width="2"/>
+  <path d="M90,35 Q75,30 65,40" fill="none" stroke="#ddd" stroke-width="1"/>
+</svg>
+`)
 
 const DesignPage: FC = () => {
   const [selectedColor, setSelectedColor] = useState('white')
-  const [selectedPosition, setSelectedPosition] = useState('left-sleeve')
-  const [uploadedLogos, setUploadedLogos] = useState<Record<string, { url: string; x: number; y: number }>>({})
+  const [selectedPosition, setSelectedPosition] = useState('front')
+  const [uploadedLogos, setUploadedLogos] = useState<Record<string, { url: string; x: number; y: number; scale: number }>>({
+    'left-sleeve': { url: '', x: 0, y: 0, scale: 1 },
+    'right-sleeve': { url: '', x: 0, y: 0, scale: 1 },
+    'front': { url: '', x: 0, y: 0, scale: 1 },
+    'back': { url: '', x: 0, y: 0, scale: 1 },
+  })
   const [isUploading, setIsUploading] = useState(false)
 
   // 获取当前颜色信息
   const currentColor = colorOptions.find((c) => c.id === selectedColor)
   
-  // 当前视角（正面或背面）
-  const currentViewBox = logoPositions.find((p) => p.id === selectedPosition)?.viewBox || 'front'
+  // 当前选中位置类型
+  const currentPositionType = logoPositions.find((p) => p.id === selectedPosition)?.type || 'body'
 
   // 上传图片
   const handleUploadImage = async () => {
@@ -58,16 +114,14 @@ const DesignPage: FC = () => {
       const tempFilePath = res.tempFilePaths[0]
       setIsUploading(true)
 
-      // 上传到对象存储
       try {
-        const uploadRes = await Network.uploadFile({
+        await Network.uploadFile({
           url: '/api/design/upload',
           filePath: tempFilePath,
           name: 'file',
         })
-        console.log('上传响应:', uploadRes)
       } catch (uploadError) {
-        console.log('上传到服务器失败，使用本地路径:', uploadError)
+        console.log('上传到服务器失败，使用本地路径')
       }
 
       // 设置当前位置的logo
@@ -77,6 +131,7 @@ const DesignPage: FC = () => {
           url: tempFilePath,
           x: 0,
           y: 0,
+          scale: 1,
         },
       }))
 
@@ -91,201 +146,148 @@ const DesignPage: FC = () => {
 
   // 删除当前位置的logo
   const handleDeleteLogo = () => {
-    setUploadedLogos((prev) => {
-      const newLogos = { ...prev }
-      delete newLogos[selectedPosition]
-      return newLogos
-    })
-  }
-
-  // 移动logo位置
-  const handleLogoMove = (position: string, x: number, y: number) => {
     setUploadedLogos((prev) => ({
       ...prev,
-      [position]: {
-        ...prev[position],
-        x,
-        y,
-      },
+      [selectedPosition]: { url: '', x: 0, y: 0, scale: 1 },
+    }))
+  }
+
+  // 移动logo
+  const handleLogoChange = (position: string, x: number, y: number) => {
+    setUploadedLogos((prev) => ({
+      ...prev,
+      [position]: { ...prev[position], x, y },
     }))
   }
 
   // 保存设计
   const handleSaveDesign = () => {
-    console.log('保存设计:', {
-      color: selectedColor,
-      logos: uploadedLogos,
-    })
+    console.log('保存设计:', { color: selectedColor, logos: uploadedLogos })
     Taro.showToast({ title: '设计已保存', icon: 'success' })
   }
 
-  // 渲染T恤SVG图形
-  const renderTshirtSVG = (view: 'front' | 'back') => {
-    const shirtColor = currentColor?.color || '#ffffff'
-    const isDark = ['black', 'navy', 'gray'].includes(selectedColor)
-    const strokeColor = isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'
+  // 渲染T恤预览（正面/背面）
+  const renderTshirtPreview = () => {
+    const isBack = selectedPosition === 'back'
+    const tshirtSrc = isBack ? TSHIRT_BACK : TSHIRT_FRONT
     
     return (
-      <View className="relative w-full h-full flex items-center justify-center">
-        {/* T恤主体 SVG */}
-        <svg viewBox="0 0 200 220" className="w-4/5 h-auto">
-          {/* T恤主体 */}
-          <path
-            d={view === 'front' 
-              ? 'M50,50 L30,60 L10,90 L30,95 L40,75 L40,200 L160,200 L160,75 L170,95 L190,90 L170,60 L150,50 L130,50 Q100,70 70,50 L50,50 Z'
-              : 'M50,50 L30,60 L10,90 L30,95 L40,75 L40,200 L160,200 L160,75 L170,95 L190,90 L170,60 L150,50 L130,50 Q100,65 70,50 L50,50 Z'
-            }
-            fill={shirtColor}
-            stroke={strokeColor}
-            strokeWidth="1"
-          />
-          {/* 领口 */}
-          <ellipse
-            cx="100"
-            cy="55"
-            rx="30"
-            ry="10"
-            fill={view === 'front' ? (isDark ? '#2a2a2a' : '#f0f0f0') : shirtColor}
-            stroke={strokeColor}
-            strokeWidth="1"
-          />
-          {view === 'front' && (
-            <>
-              {/* 领口V字 */}
-              <path
-                d="M85,55 L100,75 L115,55"
-                fill="none"
-                stroke={strokeColor}
-                strokeWidth="2"
-              />
-            </>
+      <View className="relative w-full">
+        {/* T恤图片 */}
+        <Image 
+          src={tshirtSrc}
+          mode="widthFix"
+          className="w-full"
+          style={{ filter: currentColor?.filter || 'none' }}
+        />
+        
+        {/* 设计区域（可拖动的Logo区域）- 仅在正面/背面时显示 */}
+        {(selectedPosition === 'front' || selectedPosition === 'back') && (
+          <View 
+            className="absolute border-2 border-dashed border-blue-500 rounded"
+            style={{
+              top: '28%',
+              left: '22%',
+              width: '56%',
+              height: '40%',
+            }}
+          >
+            <MovableArea className="w-full h-full" style={{ width: '100%', height: '100%' }}>
+              {uploadedLogos[selectedPosition]?.url && (
+                <MovableView
+                  direction="all"
+                  scale
+                  scaleMin={0.5}
+                  scaleMax={2}
+                  className="absolute"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                  }}
+                  x={uploadedLogos[selectedPosition].x}
+                  y={uploadedLogos[selectedPosition].y}
+                  onChange={(e) => handleLogoChange(selectedPosition, e.detail.x, e.detail.y)}
+                >
+                  <Image
+                    src={uploadedLogos[selectedPosition].url}
+                    mode="aspectFit"
+                    className="w-full h-full"
+                  />
+                </MovableView>
+              )}
+            </MovableArea>
+            
+            {/* 区域标签 */}
+            {!uploadedLogos[selectedPosition]?.url && (
+              <View className="absolute inset-0 flex items-center justify-center">
+                <Text className="block text-xs text-blue-400">设计区域 20×25cm</Text>
+              </View>
+            )}
+          </View>
+        )}
+      </View>
+    )
+  }
+
+  // 渲染袖子预览
+  const renderSleevePreview = () => {
+    const isLeft = selectedPosition === 'left-sleeve'
+    const sleeveSrc = isLeft ? SLEEVE_LEFT : SLEEVE_RIGHT
+    
+    return (
+      <View className="relative w-full">
+        {/* 袖子图片 */}
+        <Image 
+          src={sleeveSrc}
+          mode="widthFix"
+          className="w-full mx-auto"
+          style={{ 
+            width: '60%',
+            filter: currentColor?.filter || 'none',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            display: 'block'
+          }}
+        />
+        
+        {/* 袖子设计区域 */}
+        <View 
+          className="absolute border-2 border-dashed border-blue-500 rounded"
+          style={{
+            top: '15%',
+            left: '20%',
+            width: '35%',
+            height: '30%',
+          }}
+        >
+          <MovableArea className="w-full h-full" style={{ width: '100%', height: '100%' }}>
+            {uploadedLogos[selectedPosition]?.url && (
+              <MovableView
+                direction="all"
+                scale
+                scaleMin={0.5}
+                scaleMax={2}
+                className="absolute"
+                style={{ width: '100%', height: '100%' }}
+                x={uploadedLogos[selectedPosition].x}
+                y={uploadedLogos[selectedPosition].y}
+                onChange={(e) => handleLogoChange(selectedPosition, e.detail.x, e.detail.y)}
+              >
+                <Image
+                  src={uploadedLogos[selectedPosition].url}
+                  mode="aspectFit"
+                  className="w-full h-full"
+                />
+              </MovableView>
+            )}
+          </MovableArea>
+          
+          {!uploadedLogos[selectedPosition]?.url && (
+            <View className="absolute inset-0 flex items-center justify-center">
+              <Text className="block text-xs text-blue-400">10×10cm</Text>
+            </View>
           )}
-        </svg>
-
-        {/* 设计区域标注 */}
-        {view === 'front' && (
-          <>
-            {/* 左袖设计区域 */}
-            <View 
-              className={`absolute border-2 border-dashed rounded ${selectedPosition === 'left-sleeve' ? 'border-blue-500' : 'border-gray-400'}`}
-              style={{
-                top: designAreas['left-sleeve'].top,
-                left: designAreas['left-sleeve'].left,
-                width: designAreas['left-sleeve'].width,
-                height: designAreas['left-sleeve'].height,
-              }}
-            >
-              {uploadedLogos['left-sleeve'] && (
-                <MovableArea className="w-full h-full">
-                  <MovableView
-                    direction="all"
-                    className="w-full h-full"
-                    x={uploadedLogos['left-sleeve'].x}
-                    y={uploadedLogos['left-sleeve'].y}
-                    onChange={(e) => handleLogoMove('left-sleeve', e.detail.x, e.detail.y)}
-                  >
-                    <Image
-                      src={uploadedLogos['left-sleeve'].url}
-                      mode="aspectFit"
-                      className="w-full h-full"
-                    />
-                  </MovableView>
-                </MovableArea>
-              )}
-            </View>
-            
-            {/* 右袖设计区域 */}
-            <View 
-              className={`absolute border-2 border-dashed rounded ${selectedPosition === 'right-sleeve' ? 'border-blue-500' : 'border-gray-400'}`}
-              style={{
-                top: designAreas['right-sleeve'].top,
-                left: designAreas['right-sleeve'].left,
-                width: designAreas['right-sleeve'].width,
-                height: designAreas['right-sleeve'].height,
-              }}
-            >
-              {uploadedLogos['right-sleeve'] && (
-                <MovableArea className="w-full h-full">
-                  <MovableView
-                    direction="all"
-                    className="w-full h-full"
-                    x={uploadedLogos['right-sleeve'].x}
-                    y={uploadedLogos['right-sleeve'].y}
-                    onChange={(e) => handleLogoMove('right-sleeve', e.detail.x, e.detail.y)}
-                  >
-                    <Image
-                      src={uploadedLogos['right-sleeve'].url}
-                      mode="aspectFit"
-                      className="w-full h-full"
-                    />
-                  </MovableView>
-                </MovableArea>
-              )}
-            </View>
-            
-            {/* 正面设计区域 */}
-            <View 
-              className={`absolute border-2 border-dashed rounded ${selectedPosition === 'front' ? 'border-blue-500' : 'border-gray-400'}`}
-              style={{
-                top: designAreas['front'].top,
-                left: designAreas['front'].left,
-                width: designAreas['front'].width,
-                height: designAreas['front'].height,
-              }}
-            >
-              {uploadedLogos['front'] && (
-                <MovableArea className="w-full h-full">
-                  <MovableView
-                    direction="all"
-                    className="w-full h-full"
-                    x={uploadedLogos['front'].x}
-                    y={uploadedLogos['front'].y}
-                    onChange={(e) => handleLogoMove('front', e.detail.x, e.detail.y)}
-                  >
-                    <Image
-                      src={uploadedLogos['front'].url}
-                      mode="aspectFit"
-                      className="w-full h-full"
-                    />
-                  </MovableView>
-                </MovableArea>
-              )}
-            </View>
-          </>
-        )}
-
-        {view === 'back' && (
-          <>
-            {/* 背面设计区域 */}
-            <View 
-              className={`absolute border-2 border-dashed rounded ${selectedPosition === 'back' ? 'border-blue-500' : 'border-gray-400'}`}
-              style={{
-                top: designAreas['back'].top,
-                left: designAreas['back'].left,
-                width: designAreas['back'].width,
-                height: designAreas['back'].height,
-              }}
-            >
-              {uploadedLogos['back'] && (
-                <MovableArea className="w-full h-full">
-                  <MovableView
-                    direction="all"
-                    className="w-full h-full"
-                    x={uploadedLogos['back'].x}
-                    y={uploadedLogos['back'].y}
-                    onChange={(e) => handleLogoMove('back', e.detail.x, e.detail.y)}
-                  >
-                    <Image
-                      src={uploadedLogos['back'].url}
-                      mode="aspectFit"
-                      className="w-full h-full"
-                    />
-                  </MovableView>
-                </MovableArea>
-              )}
-            </View>
-          </>
-        )}
+        </View>
       </View>
     )
   }
@@ -305,43 +307,21 @@ const DesignPage: FC = () => {
 
       <ScrollView scrollY className="flex-1">
         {/* T恤预览区 */}
-        <View className="relative mx-4 mt-4 bg-white rounded-2xl overflow-hidden shadow-sm">
-          {/* 视角切换标签 */}
-          <View className="absolute top-2 right-2 z-10 flex gap-1">
-            <View
-              className={`px-3 py-1 rounded-full text-xs ${
-                currentViewBox === 'front'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-600'
-              }`}
-              onClick={() => setSelectedPosition('front')}
-            >
-              <Text className="block text-xs">正面</Text>
-            </View>
-            <View
-              className={`px-3 py-1 rounded-full text-xs ${
-                currentViewBox === 'back'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-600'
-              }`}
-              onClick={() => setSelectedPosition('back')}
-            >
-              <Text className="block text-xs">背面</Text>
-            </View>
-          </View>
-
-          {/* T恤图形 */}
+        <View className="mx-4 mt-4 bg-white rounded-2xl overflow-hidden shadow-sm">
+          {/* 预览区域 */}
           <View 
-            className="w-full h-80"
+            className="w-full flex items-center justify-center py-6"
             style={{ backgroundColor: currentColor?.color || '#ffffff' }}
           >
-            {renderTshirtSVG(currentViewBox as 'front' | 'back')}
+            {currentPositionType === 'body' ? renderTshirtPreview() : renderSleevePreview()}
           </View>
 
           {/* 尺寸提示 */}
           <View className="px-4 py-2 bg-gray-50 border-t border-gray-100">
             <Text className="block text-xs text-gray-500">
-              设计区域：袖口 10×10cm | 正面/背面 20×25cm
+              {currentPositionType === 'body' 
+                ? '设计区域：正面/背面 20×25cm，可拖动调整位置' 
+                : '设计区域：袖口 10×10cm，可拖动调整位置'}
             </Text>
           </View>
         </View>
@@ -367,9 +347,9 @@ const DesignPage: FC = () => {
                 >
                   {position.name}
                 </Text>
-                {uploadedLogos[position.id] && (
+                {uploadedLogos[position.id]?.url && (
                   <View className="mt-1">
-                    <Text className="block text-xs text-green-400">✓ 已上传</Text>
+                    <Text className="block text-xs text-green-400">✓</Text>
                   </View>
                 )}
               </View>
@@ -408,13 +388,16 @@ const DesignPage: FC = () => {
             上传Logo - {logoPositions.find((p) => p.id === selectedPosition)?.name}
           </Text>
           
-          {uploadedLogos[selectedPosition] ? (
+          {uploadedLogos[selectedPosition]?.url ? (
             <View className="flex flex-col items-center">
               <Image 
                 src={uploadedLogos[selectedPosition].url} 
                 mode="aspectFit" 
                 className="w-32 h-32 rounded-lg border border-gray-200"
               />
+              <Text className="block text-xs text-gray-500 mt-2">
+                上传后可在上方设计区域内拖动调整位置
+              </Text>
               <View className="flex gap-2 mt-3">
                 <Button 
                   size="sm" 
@@ -452,8 +435,9 @@ const DesignPage: FC = () => {
             1. 选择T恤颜色{'\n'}
             2. 选择Logo位置（左袖/右袖/正面/背面）{'\n'}
             3. 上传您的Logo图片{'\n'}
-            4. 拖动Logo调整位置{'\n'}
-            5. 点击保存完成设计
+            4. 在设计区域内拖动Logo调整位置{'\n'}
+            5. 双指缩放调整Logo大小{'\n'}
+            6. 点击保存完成设计
           </Text>
         </View>
       </ScrollView>

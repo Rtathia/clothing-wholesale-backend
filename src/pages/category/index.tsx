@@ -12,11 +12,11 @@ const styleTypes = [
   { id: 'hoodie', name: '卫衣', icon: '🎽' },
 ]
 
-// 布料类型数据
+// 布料类型数据（添加图标，与款式类型样式一致）
 const fabricTypes = [
-  { id: 'cotton', name: '纯棉', desc: '透气舒适' },
-  { id: 'polyester', name: '纯涤', desc: '耐磨易打理' },
-  { id: 'blend', name: '棉涤混纺', desc: '兼顾两者优点' },
+  { id: 'cotton', name: '纯棉', icon: '🌿', desc: '透气舒适' },
+  { id: 'polyester', name: '纯涤', icon: '🔬', desc: '耐磨易打理' },
+  { id: 'blend', name: '棉涤混纺', icon: '🧵', desc: '兼顾优点' },
 ]
 
 // 模拟商品数据
@@ -78,26 +78,20 @@ const CategoryPage: FC = () => {
             {fabricTypes.map((fabric) => (
               <View
                 key={fabric.id}
-                className={`p-2 rounded-lg ${
+                className={`p-2 rounded-lg text-center ${
                   selectedFabric === fabric.id
                     ? 'bg-blue-600'
                     : 'bg-gray-50'
                 }`}
                 onClick={() => setSelectedFabric(selectedFabric === fabric.id ? null : fabric.id)}
               >
+                <Text className="block text-lg">{fabric.icon}</Text>
                 <Text
-                  className={`block text-xs font-medium ${
+                  className={`block text-xs mt-1 ${
                     selectedFabric === fabric.id ? 'text-white' : 'text-gray-700'
                   }`}
                 >
                   {fabric.name}
-                </Text>
-                <Text
-                  className={`block text-xs mt-1 ${
-                    selectedFabric === fabric.id ? 'text-blue-100' : 'text-gray-500'
-                  }`}
-                >
-                  {fabric.desc}
                 </Text>
               </View>
             ))}
