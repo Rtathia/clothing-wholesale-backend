@@ -110,10 +110,10 @@ const HomePage: FC = () => {
           </View>
         </View>
 
-        {/* 热门推荐 */}
+        {/* 全部款式 */}
         <View className="px-4 mt-4">
           <View className="flex items-center justify-between mb-3">
-            <Text className="block text-lg font-semibold text-gray-900">热门推荐</Text>
+            <Text className="block text-lg font-semibold text-gray-900">全部款式</Text>
             <View className="flex items-center" onClick={() => Taro.switchTab({ url: '/pages/category/index' })}>
               <Text className="block text-sm text-gray-500">查看更多</Text>
               <Text className="block text-sm text-gray-400 ml-1">›</Text>
@@ -122,10 +122,10 @@ const HomePage: FC = () => {
           
           <View className="grid grid-cols-2 gap-3">
             {[
-              { id: 1, name: '经典POLO衫', price: '89', tag: '热销' },
-              { id: 2, name: '纯棉圆领T恤', price: '59', tag: '新品' },
-              { id: 3, name: '运动卫衣', price: '159', tag: '' },
-              { id: 4, name: '商务长袖POLO', price: '129', tag: '' },
+              { id: 1, name: '经典POLO衫', price: '89' },
+              { id: 2, name: '纯棉圆领T恤', price: '59' },
+              { id: 3, name: '运动卫衣', price: '159' },
+              { id: 4, name: '商务长袖POLO', price: '129' },
             ].map((product) => (
               <View
                 key={product.id}
@@ -133,13 +133,8 @@ const HomePage: FC = () => {
                 onClick={() => Taro.navigateTo({ url: `/pages/product-detail/index?id=${product.id}` })}
               >
                 {/* 商品图片 */}
-                <View className="w-full h-36 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center relative">
+                <View className="w-full h-36 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                   <Text className="block text-5xl text-gray-300">👕</Text>
-                  {product.tag && (
-                    <View className="absolute top-2 left-2 px-2 py-0.5 bg-orange-500 rounded-full">
-                      <Text className="block text-xs text-white">{product.tag}</Text>
-                    </View>
-                  )}
                 </View>
                 {/* 商品信息 */}
                 <View className="p-3">

@@ -125,12 +125,12 @@ const CategoryPage: FC = () => {
           </View>
         )}
 
-        {/* 商品网格 */}
-        <View className="flex flex-wrap gap-2">
+        {/* 商品网格 - 两列布局 */}
+        <View className="flex flex-row flex-wrap justify-between">
           {filteredProducts.map((product) => (
             <View
               key={product.id}
-              className="w-[calc(50%-4px)] bg-white rounded-lg overflow-hidden shadow-sm"
+              className="w-[48%] bg-white rounded-lg overflow-hidden shadow-sm mb-2"
               onClick={() => {
                 Taro.navigateTo({ url: `/pages/product-detail/index?id=${product.id}` })
               }}
@@ -145,7 +145,7 @@ const CategoryPage: FC = () => {
                   {product.name}
                 </Text>
                 <View className="flex items-baseline mt-1">
-                  <Text className="block text-xs text-gray-500">¥</Text>
+                  <Text className="block text-xs text-orange-500">¥</Text>
                   <Text className="block text-lg font-bold text-orange-500">
                     {product.price}
                   </Text>
