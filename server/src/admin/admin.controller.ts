@@ -144,6 +144,63 @@ export class AdminController {
     return this.adminService.deleteTshirtColor(id);
   }
 
+  // ==================== 尺码管理接口 ====================
+  
+  @Get('sizes')
+  async getSizes() {
+    return this.adminService.getSizes();
+  }
+
+  @Post('sizes')
+  async createSize(@Body() body: { name: string; sortOrder?: number }) {
+    return this.adminService.createSize(body);
+  }
+
+  @Put('sizes/:id')
+  async updateSize(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: Partial<{ name: string; sortOrder: number; isActive: boolean }>,
+  ) {
+    return this.adminService.updateSize(id, body);
+  }
+
+  @Delete('sizes/:id')
+  async deleteSize(@Param('id', ParseIntPipe) id: number) {
+    return this.adminService.deleteSize(id);
+  }
+
+  // ==================== 产品尺码关联接口 ====================
+  
+  @Get('products/:id/sizes')
+  async getProductSizes(@Param('id', ParseIntPipe) id: number) {
+    return this.adminService.getProductSizes(id);
+  }
+
+  @Post('products/:id/sizes')
+  async setProductSizes(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: { sizes: { sizeId: number; stock: number; isActive?: boolean }[] },
+  ) {
+    return this.adminService.setProductSizes(id, body.sizes);
+  }
+
+  @Put('products/:id/sizes/:sizeId')
+  async updateProductSize(
+    @Param('id', ParseIntPipe) productId: number,
+    @Param('sizeId', ParseIntPipe) sizeId: number,
+    @Body() body: Partial<{ stock: number; isActive: boolean }>,
+  ) {
+    return this.adminService.updateProductSize(productId, sizeId, body);
+  }
+
+  @Delete('products/:id/sizes/:sizeId')
+  async removeProductSize(
+    @Param('id', ParseIntPipe) productId: number,
+    @Param('sizeId', ParseIntPipe) sizeId: number,
+  ) {
+    return this.adminService.removeProductSize(productId, sizeId);
+  }
+
   // ==================== 产品接口 ====================
   
   @Get('products')

@@ -352,6 +352,172 @@ export class AdminService {
     return { success: true };
   }
 
+  // ==================== 尺码管理 ====================
+  
+  async getSizes() {
+    const client = getSupabaseClient();
+    const { data, error } = await client
+      .from('sizes')
+      .select('*')
+      .eq('is_active', true)
+      .order('sort_order', { ascending: true });
+    
+    if (error) throw new Error(error.message);
+    return data;
+  }
+
+  async createSize(dto: { name: string; sortOrder?: number }) {
+    const client = getSupabaseClient();
+    const { data, error } = await client
+      .from('sizes')
+      .insert({
+        name: dto.name,
+        sort_order: dto.sortOrder || 0,
+      })
+      .select()
+      .single();
+    
+    if (error) throw new Error(error.message);
+    return data;
+  }
+
+  async updateSize(id: number, dto: Partial<{ name: string; sortOrder: number; isActive: boolean }>) {
+    const client = getSupabaseClient();
+    const updateData: Record<string, unknown> = {};
+    if (dto.name) updateData.name = dto.name;
+    if (dto.sortOrder !== undefined) updateData.sort_order = dto.sortOrder;
+    if (dto.isActive !== undefined) updateData.is_active = dto.isActive;
+    
+    const { data, error } = await client
+      .from('sizes')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw new Error(error.message);
+    return data;
+  }
+
+  async deleteSize(id: number) {
+    const client = getSupabaseClient();
+    const { error } = await client
+      .from('sizes')
+      .update({ is_active: false })
+      .eq('id', id);
+    
+    if (error) throw new Error(error.message);
+    return { success: true };
+  }
+
+  // ==================== 产品尺码关联管理 ====================
+  
+  async getProductSizes(productId: number) {
+    const client = getSupabaseClient();
+    try {
+      const { data, error } = await client
+        .from('product_sizes')
+        .select(`
+          id,
+          stock,
+          is_active,
+          size_id,
+          sizes: size_id (id, name, sort_order)
+        `)
+        .eq('product_id', productId);
+      
+      if (error) {
+        console.error('获取产品尺码失败:', error);
+        return [];
+      }
+      
+      return (data || []).map((item: Record<string, unknown>) => ({
+        id: item.id,
+        sizeId: item.size_id,
+        sizeName: (item.sizes as Record<string, unknown>)?.name,
+        sortOrder: (item.sizes as Record<string, unknown>)?.sort_order,
+        stock: item.stock,
+        isActive: item.is_active,
+      }));
+    } catch (error) {
+      console.error('获取产品尺码异常:', error);
+      return [];
+    }
+  }
+
+  async setProductSizes(productId: number, sizes: { sizeId: number; stock: number; isActive?: boolean }[]) {
+    const client = getSupabaseClient();
+    
+    try {
+      // 先删除该产品的所有尺码关联
+      await client
+        .from('product_sizes')
+        .delete()
+        .eq('product_id', productId);
+    } catch (error) {
+      console.error('删除产品尺码关联失败:', error);
+      // 继续尝试插入
+    }
+    
+    // 批量插入新的尺码关联
+    if (sizes.length > 0) {
+      const insertData = sizes.map(s => ({
+        product_id: productId,
+        size_id: s.sizeId,
+        stock: s.stock,
+        is_active: s.isActive !== undefined ? s.isActive : true,
+      }));
+      
+      try {
+        const { data, error } = await client
+          .from('product_sizes')
+          .insert(insertData)
+          .select();
+        
+        if (error) {
+          console.error('插入产品尺码失败:', error);
+          throw new Error(error.message);
+        }
+        return data;
+      } catch (error) {
+        console.error('插入产品尺码异常:', error);
+        throw error;
+      }
+    }
+    
+    return [];
+  }
+
+  async updateProductSize(productId: number, sizeId: number, dto: Partial<{ stock: number; isActive: boolean }>) {
+    const client = getSupabaseClient();
+    const updateData: Record<string, unknown> = {};
+    if (dto.stock !== undefined) updateData.stock = dto.stock;
+    if (dto.isActive !== undefined) updateData.is_active = dto.isActive;
+    
+    const { data, error } = await client
+      .from('product_sizes')
+      .update(updateData)
+      .eq('product_id', productId)
+      .eq('size_id', sizeId)
+      .select()
+      .single();
+    
+    if (error) throw new Error(error.message);
+    return data;
+  }
+
+  async removeProductSize(productId: number, sizeId: number) {
+    const client = getSupabaseClient();
+    const { error } = await client
+      .from('product_sizes')
+      .delete()
+      .eq('product_id', productId)
+      .eq('size_id', sizeId);
+    
+    if (error) throw new Error(error.message);
+    return { success: true };
+  }
+
   // ==================== 产品管理 ====================
   
   async getProducts(filters?: { categoryId?: number; fabricId?: number; craftId?: number }) {

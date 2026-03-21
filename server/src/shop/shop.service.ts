@@ -118,17 +118,53 @@ export class ShopService {
     return data;
   }
 
-  // 获取产品详情
+  // 获取产品详情（包含尺码信息）
   async getProductById(id: number) {
     const client = getSupabaseClient();
-    const { data, error } = await client
+    
+    // 获取产品基本信息
+    const { data: product, error: productError } = await client
       .from('products')
       .select('*')
       .eq('id', id)
       .single();
     
-    if (error) throw new Error(error.message);
-    return data;
+    if (productError) throw new Error(productError.message);
+    
+    // 获取产品关联的尺码信息（如果表不存在则返回空数组）
+    let sizes: { id: number; sizeId: number; sizeName: string; sortOrder: number; stock: number; isActive: boolean }[] = [];
+    try {
+      const { data: productSizes } = await client
+        .from('product_sizes')
+        .select(`
+          id,
+          stock,
+          is_active,
+          size_id,
+          sizes: size_id (id, name, sort_order)
+        `)
+        .eq('product_id', id)
+        .eq('is_active', true);
+      
+      if (productSizes) {
+        sizes = (productSizes || []).map((item: Record<string, unknown>) => ({
+          id: item.id as number,
+          sizeId: item.size_id as number,
+          sizeName: (item.sizes as Record<string, unknown>)?.name as string,
+          sortOrder: (item.sizes as Record<string, unknown>)?.sort_order as number,
+          stock: item.stock as number,
+          isActive: item.is_active as boolean,
+        })).sort((a, b) => a.sortOrder - b.sortOrder);
+      }
+    } catch (error) {
+      console.error('获取产品尺码失败，可能是schema缓存未刷新:', error);
+      // 返回空数组，不影响产品详情显示
+    }
+    
+    return {
+      ...product,
+      sizes,
+    };
   }
 
   // 获取筛选数据（一次性获取所有分类数据）

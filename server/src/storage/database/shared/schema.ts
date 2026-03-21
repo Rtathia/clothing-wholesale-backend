@@ -76,6 +76,29 @@ export const tshirtColors = pgTable("tshirt_colors", {
 	updatedAt: timestamp("updated_at", { withTimezone: true }),
 });
 
+// ==================== 尺码表 ====================
+
+// 尺码表：S, M, L, XL, 2XL, 3XL, 4XL, 5XL 等
+export const sizes = pgTable("sizes", {
+	id: serial().notNull(),
+	name: varchar("name", { length: 20 }).notNull(), // 如: S, M, L, XL, 2XL
+	sortOrder: integer("sort_order").default(0), // 排序：数字越小越靠前
+	isActive: boolean("is_active").default(true),
+	createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+	updatedAt: timestamp("updated_at", { withTimezone: true }),
+});
+
+// 产品尺码关联表：每个产品可以选择多个尺码，每个尺码可以设置库存
+export const productSizes = pgTable("product_sizes", {
+	id: serial().notNull(),
+	productId: integer("product_id").notNull().references(() => products.id),
+	sizeId: integer("size_id").notNull().references(() => sizes.id),
+	stock: integer("stock").default(0), // 该尺码的库存数量，-1表示无限库存
+	isActive: boolean("is_active").default(true), // 该尺码是否可用（可用于上下架某个尺码）
+	createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+	updatedAt: timestamp("updated_at", { withTimezone: true }),
+});
+
 // ==================== 产品表 ====================
 
 // 产品表

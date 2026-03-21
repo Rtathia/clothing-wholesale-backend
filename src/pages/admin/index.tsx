@@ -5,6 +5,22 @@ import type { FC } from 'react'
 import { Network } from '@/network'
 import './index.css'
 
+// 尺码数据类型
+interface Size {
+  id: number
+  name: string
+  sort_order: number
+  is_active: boolean
+}
+
+// 产品尺码关联类型
+interface ProductSize {
+  sizeId: number
+  sizeName: string
+  stock: number
+  isActive: boolean
+}
+
 // 产品类型
 interface Product {
   id: number
@@ -44,6 +60,7 @@ interface ProductForm {
   detailImages: string[]
   videos: string[]
   photos: string[]
+  sizes: ProductSize[] // 产品尺码
 }
 
 const initialForm: ProductForm = {
@@ -59,6 +76,7 @@ const initialForm: ProductForm = {
   detailImages: [],
   videos: [],
   photos: [],
+  sizes: [],
 }
 
 const AdminPage: FC = () => {
@@ -77,6 +95,7 @@ const AdminPage: FC = () => {
   const [crafts, setCrafts] = useState<Category[]>([])
   const [fits, setFits] = useState<Category[]>([])
   const [styles, setStyles] = useState<Category[]>([])
+  const [sizes, setSizes] = useState<Size[]>([]) // 所有可用尺码
   
   // 上传状态
   const [uploading, setUploading] = useState(false)
@@ -113,6 +132,12 @@ const AdminPage: FC = () => {
       setCrafts(data.crafts || [])
       setFits(data.fits || [])
       setStyles(data.styles || [])
+      
+      // 获取尺码列表
+      const sizesRes = await Network.request({
+        url: '/api/admin/sizes',
+      })
+      setSizes(sizesRes.data || [])
     } catch (error) {
       console.error('获取筛选数据失败:', error)
     }
@@ -203,8 +228,25 @@ const AdminPage: FC = () => {
   }
 
   // 编辑产品
-  const handleEditProduct = (product: Product) => {
+  const handleEditProduct = async (product: Product) => {
     setEditingProduct(product)
+    
+    // 获取产品关联的尺码
+    let productSizes: ProductSize[] = []
+    try {
+      const res = await Network.request({
+        url: `/api/admin/products/${product.id}/sizes`,
+      })
+      productSizes = (res.data || []).map((s: { sizeId: number; sizeName: string; stock: number; isActive: boolean }) => ({
+        sizeId: s.sizeId,
+        sizeName: s.sizeName,
+        stock: s.stock,
+        isActive: s.isActive,
+      }))
+    } catch (error) {
+      console.error('获取产品尺码失败:', error)
+    }
+    
     setProductForm({
       name: product.name,
       description: product.description || '',
@@ -218,6 +260,7 @@ const AdminPage: FC = () => {
       detailImages: product.detail_images ? JSON.parse(product.detail_images) : [],
       videos: product.videos ? JSON.parse(product.videos) : [],
       photos: product.photos ? JSON.parse(product.photos) : [],
+      sizes: productSizes,
     })
     setShowProductForm(true)
   }
@@ -257,22 +300,39 @@ const AdminPage: FC = () => {
     }
 
     try {
+      let productId = editingProduct?.id
+      
       if (editingProduct) {
         await Network.request({
           url: `/api/admin/products/${editingProduct.id}`,
           method: 'PUT',
           data,
         })
-        Taro.showToast({ title: '更新成功', icon: 'success' })
       } else {
-        await Network.request({
+        const res = await Network.request({
           url: '/api/admin/products',
           method: 'POST',
           data,
         })
-        Taro.showToast({ title: '创建成功', icon: 'success' })
+        productId = res.data?.id
       }
       
+      // 保存产品尺码关联
+      if (productId && productForm.sizes.length > 0) {
+        await Network.request({
+          url: `/api/admin/products/${productId}/sizes`,
+          method: 'POST',
+          data: {
+            sizes: productForm.sizes.map(s => ({
+              sizeId: s.sizeId,
+              stock: s.stock,
+              isActive: s.isActive,
+            })),
+          },
+        })
+      }
+      
+      Taro.showToast({ title: editingProduct ? '更新成功' : '创建成功', icon: 'success' })
       setShowProductForm(false)
       fetchProducts()
     } catch (error) {
@@ -602,6 +662,116 @@ const AdminPage: FC = () => {
                     </View>
                   ))}
                 </View>
+              </View>
+
+              {/* 尺码选择 */}
+              <View className="mb-4">
+                <Text className="block text-sm text-gray-700 mb-2">
+                  可选尺码
+                  <Text className="text-xs text-gray-400 ml-2">（点击添加/移除，可设置库存）</Text>
+                </Text>
+                <View className="flex flex-wrap gap-2 mb-2">
+                  {sizes.map((size) => {
+                    const isSelected = productForm.sizes.some(s => s.sizeId === size.id)
+                    
+                    return (
+                      <View
+                        key={size.id}
+                        className={`flex flex-row items-center px-3 py-2 rounded-lg ${
+                          isSelected ? 'bg-blue-600' : 'bg-gray-100'
+                        }`}
+                        onClick={() => {
+                          if (isSelected) {
+                            // 移除尺码
+                            setProductForm(prev => ({
+                              ...prev,
+                              sizes: prev.sizes.filter(s => s.sizeId !== size.id)
+                            }))
+                          } else {
+                            // 添加尺码
+                            setProductForm(prev => ({
+                              ...prev,
+                              sizes: [...prev.sizes, {
+                                sizeId: size.id,
+                                sizeName: size.name,
+                                stock: -1, // 默认无限库存
+                                isActive: true,
+                              }]
+                            }))
+                          }
+                        }}
+                      >
+                        <Text className={`text-sm ${
+                          isSelected ? 'text-white' : 'text-gray-700'
+                        }`}
+                        >
+                          {size.name}
+                        </Text>
+                        {isSelected && (
+                          <Text className="text-white text-xs ml-1">✓</Text>
+                        )}
+                      </View>
+                    )
+                  })}
+                </View>
+                
+                {/* 已选尺码的库存设置 */}
+                {productForm.sizes.length > 0 && (
+                  <View className="mt-3 bg-gray-50 rounded-lg p-3">
+                    <Text className="block text-xs text-gray-500 mb-2">尺码库存设置（-1表示无限库存）</Text>
+                    {productForm.sizes.map((ps) => (
+                      <View key={ps.sizeId} className="flex flex-row items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
+                        <Text className="text-sm text-gray-700">{ps.sizeName}</Text>
+                        <View className="flex flex-row items-center">
+                          <View
+                            className="w-6 h-6 bg-gray-200 rounded flex items-center justify-center"
+                            onClick={() => {
+                              setProductForm(prev => ({
+                                ...prev,
+                                sizes: prev.sizes.map(s => 
+                                  s.sizeId === ps.sizeId 
+                                    ? { ...s, stock: s.stock === -1 ? 0 : Math.max(-1, s.stock - 1) }
+                                    : s
+                                )
+                              }))
+                            }}
+                          >
+                            <Text className="text-gray-600">-</Text>
+                          </View>
+                          <View className="w-12 mx-2 bg-white rounded px-2 py-1 text-center">
+                            <Input
+                              className="w-full text-center text-sm"
+                              type="number"
+                              value={ps.stock.toString()}
+                              onInput={(e) => {
+                                const val = parseInt(e.detail.value) || 0
+                                setProductForm(prev => ({
+                                  ...prev,
+                                  sizes: prev.sizes.map(s => 
+                                    s.sizeId === ps.sizeId ? { ...s, stock: val } : s
+                                  )
+                                }))
+                              }}
+                            />
+                          </View>
+                          <View
+                            className="w-6 h-6 bg-gray-200 rounded flex items-center justify-center"
+                            onClick={() => {
+                              setProductForm(prev => ({
+                                ...prev,
+                                sizes: prev.sizes.map(s => 
+                                  s.sizeId === ps.sizeId ? { ...s, stock: s.stock + 1 } : s
+                                )
+                              }))
+                            }}
+                          >
+                            <Text className="text-gray-600">+</Text>
+                          </View>
+                        </View>
+                      </View>
+                    ))}
+                  </View>
+                )}
               </View>
 
               {/* 图片上传 */}

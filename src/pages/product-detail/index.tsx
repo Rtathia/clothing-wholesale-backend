@@ -20,6 +20,16 @@ interface Product {
   detail_images: string | null // JSON数组字符串
   videos: string | null // JSON数组字符串
   photos: string | null // JSON数组字符串
+  sizes?: ProductSize[] // 产品尺码
+}
+
+// 产品尺码类型
+interface ProductSize {
+  id: number
+  sizeId: number
+  sizeName: string
+  stock: number
+  isActive: boolean
 }
 
 // 分类数据类型
@@ -27,18 +37,6 @@ interface Category {
   id: number
   name: string
 }
-
-// 尺码选项
-const sizeOptions = [
-  { id: 'S', name: 'S' },
-  { id: 'M', name: 'M' },
-  { id: 'L', name: 'L' },
-  { id: 'XL', name: 'XL' },
-  { id: '2XL', name: '2XL' },
-  { id: '3XL', name: '3XL' },
-  { id: '4XL', name: '4XL', disabled: true },
-  { id: '5XL', name: '5XL', disabled: true },
-]
 
 const ProductDetailPage: FC = () => {
   const router = useRouter()
@@ -256,32 +254,41 @@ const ProductDetailPage: FC = () => {
                 <Text className="text-sm text-gray-500 ml-2">已选：{selectedSize}</Text>
               )}
             </View>
-            <View className="flex flex-wrap gap-2">
-              {sizeOptions.map((size) => (
-                <View
-                  key={size.id}
-                  className={`px-4 py-2 rounded-lg ${
-                    size.disabled
-                      ? 'bg-gray-100 border border-gray-200'
-                      : selectedSize === size.id
-                        ? 'bg-blue-600 border border-blue-600'
-                        : 'bg-blue-100 border border-blue-200'
-                  }`}
-                  onClick={() => !size.disabled && setSelectedSize(size.id)}
-                >
-                  <Text className={`text-sm ${
-                    size.disabled 
-                      ? 'text-gray-400' 
-                      : selectedSize === size.id 
-                        ? 'text-white' 
-                        : 'text-blue-600'
-                  }`}
-                  >
-                    {size.name}
-                  </Text>
-                </View>
-              ))}
-            </View>
+            {product.sizes && product.sizes.length > 0 ? (
+              <View className="flex flex-wrap gap-2">
+                {product.sizes.map((size) => {
+                  const isDisabled = !size.isActive || (size.stock !== -1 && size.stock <= 0)
+                  return (
+                    <View
+                      key={size.sizeId}
+                      className={`px-4 py-2 rounded-lg ${
+                        isDisabled
+                          ? 'bg-gray-100 border border-gray-200'
+                          : selectedSize === size.sizeName
+                            ? 'bg-blue-600 border border-blue-600'
+                            : 'bg-blue-100 border border-blue-200'
+                      }`}
+                      onClick={() => !isDisabled && setSelectedSize(size.sizeName)}
+                    >
+                      <Text className={`text-sm ${
+                        isDisabled 
+                          ? 'text-gray-400' 
+                          : selectedSize === size.sizeName 
+                            ? 'text-white' 
+                            : 'text-blue-600'
+                      }`}
+                      >
+                        {size.sizeName}
+                      </Text>
+                    </View>
+                  )
+                })}
+              </View>
+            ) : (
+              <View className="flex items-center justify-center py-4">
+                <Text className="text-gray-400 text-sm">该商品暂无可用尺码</Text>
+              </View>
+            )}
           </View>
         </View>
 
