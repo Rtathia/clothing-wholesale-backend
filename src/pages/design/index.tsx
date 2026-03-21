@@ -24,8 +24,8 @@ const logoPositions = [
   { id: 'back', name: '背面', type: 'body' },
 ]
 
-// T恤基础图片URL（白色纯色T恤基础款）
-const TSHIRT_BASE_URL = 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2Fimage.png&nonce=02184a69-d016-4d6b-955b-549f69ef8a72&project_id=7619676618268688390&sign=ee731de39d125d778f04c8762f6656634e3738c277b9549a9f5c1bdd5b595900'
+// T恤基础图片URL（白色纯色T恤基础款）- 用户提供的正确图片
+const TSHIRT_BASE_URL = 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2Fimage.png&nonce=699dc3d1-fe12-42bc-b87c-f9f70d812122&project_id=7619676618268688390&sign=f1aaf1a5a9864621edb1885e413903ad586b122934f06fdfc37dd998fb9d8696'
 
 const DesignPage: FC = () => {
   const [selectedColor, setSelectedColor] = useState('white')
@@ -109,7 +109,7 @@ const DesignPage: FC = () => {
   }
 
   return (
-    <View className="flex flex-col h-screen bg-gray-100">
+    <View className="flex flex-col bg-gray-100" style={{ height: 'calc(100vh - 50px)' }}>
       {/* 顶部标题栏 */}
       <View className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
         <View className="flex items-center gap-2">
