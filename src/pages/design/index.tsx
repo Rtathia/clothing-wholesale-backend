@@ -1,5 +1,5 @@
-import { View, Text, ScrollView, Image, MovableArea, MovableView } from '@tarojs/components'
-import { useState } from 'react'
+import { View, Text, ScrollView, Image, MovableArea, MovableView, Canvas } from '@tarojs/components'
+import { useState, useEffect } from 'react'
 import Taro from '@tarojs/taro'
 import type { FC } from 'react'
 import { Button } from '@/components/ui/button'
@@ -8,12 +8,12 @@ import './index.css'
 
 // 颜色选项（只保留6种颜色）
 const colorOptions = [
-  { id: 'white', name: '白色', color: '#ffffff', filter: 'brightness(1)', border: true },
-  { id: 'black', name: '黑色', color: '#1a1a1a', filter: 'brightness(0.1) contrast(1.2)', border: false },
-  { id: 'navy', name: '藏青', color: '#1e3a5f', filter: 'brightness(0.4) sepia(1) saturate(3) hue-rotate(180deg)', border: false },
-  { id: 'dark-gray', name: '深灰', color: '#4a4a4a', filter: 'brightness(0.4) contrast(1.1)', border: false },
-  { id: 'light-gray', name: '浅灰', color: '#c0c0c0', filter: 'brightness(0.85)', border: true },
-  { id: 'blue', name: '蓝色', color: '#2563eb', filter: 'brightness(0.5) sepia(1) saturate(5) hue-rotate(200deg)', border: false },
+  { id: 'white', name: '白色', hex: '#ffffff', border: true },
+  { id: 'black', name: '黑色', hex: '#1a1a1a', border: false },
+  { id: 'navy', name: '藏青', hex: '#1e3a5f', border: false },
+  { id: 'dark-gray', name: '深灰', hex: '#4a4a4a', border: false },
+  { id: 'light-gray', name: '浅灰', hex: '#c0c0c0', border: true },
+  { id: 'blue', name: '蓝色', hex: '#2563eb', border: false },
 ]
 
 // Logo位置选项
@@ -27,9 +27,20 @@ const logoPositions = [
 // T恤基础图片URL（白色纯色T恤基础款）
 const TSHIRT_BASE_URL = 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2Fimage.png&nonce=a0bae4a0-bfa2-4a87-ba0d-ff8a140f09e7&project_id=7619676618268688390&sign=a2d65018b51d7fd5aa0e0fa11fb9e8c08a40f2a4cfc8fd3ed215937953b1d45e'
 
+// Hex转RGB
+const hexToRgb = (hex: string) => {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : { r: 255, g: 255, b: 255 }
+}
+
 const DesignPage: FC = () => {
   const [selectedColor, setSelectedColor] = useState('white')
   const [selectedPosition, setSelectedPosition] = useState('front')
+  const [coloredImagePath, setColoredImagePath] = useState(TSHIRT_BASE_URL)
   const [uploadedLogos, setUploadedLogos] = useState<Record<string, { url: string; x: number; y: number; scale: number }>>({
     'left-sleeve': { url: '', x: 0, y: 0, scale: 1 },
     'right-sleeve': { url: '', x: 0, y: 0, scale: 1 },
@@ -37,12 +48,156 @@ const DesignPage: FC = () => {
     'back': { url: '', x: 0, y: 0, scale: 1 },
   })
   const [isUploading, setIsUploading] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
 
   // 获取当前颜色信息
   const currentColor = colorOptions.find((c) => c.id === selectedColor)
   
   // 当前选中位置类型
   const currentPositionType = logoPositions.find((p) => p.id === selectedPosition)?.type || 'body'
+
+  // 使用Canvas替换颜色
+  const changeTshirtColor = async (targetHex: string) => {
+    if (targetHex === '#ffffff') {
+      // 白色直接显示原图
+      setColoredImagePath(TSHIRT_BASE_URL)
+      return
+    }
+
+    setIsProcessing(true)
+    const targetColor = hexToRgb(targetHex)
+
+    try {
+      // H5端使用Canvas处理
+      if (Taro.getEnv() === Taro.ENV_TYPE.WEB) {
+        const img = new window.Image()
+        img.crossOrigin = 'anonymous'
+        
+        img.onload = () => {
+          const canvas = document.createElement('canvas')
+          const ctx = canvas.getContext('2d')
+          if (!ctx) {
+            setColoredImagePath(TSHIRT_BASE_URL)
+            setIsProcessing(false)
+            return
+          }
+          canvas.width = img.width
+          canvas.height = img.height
+          
+          ctx.drawImage(img, 0, 0)
+          
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+          const data = imageData.data
+          
+          // 遍历像素，将白色/浅色替换为目标颜色
+          for (let i = 0; i < data.length; i += 4) {
+            const r = data[i]
+            const g = data[i + 1]
+            const b = data[i + 2]
+            const a = data[i + 3]
+            
+            // 只处理接近白色的像素（保持透明度和阴影）
+            if (a > 0 && r > 200 && g > 200 && b > 200) {
+              // 根据亮度调整目标颜色的明暗
+              const brightness = (r + g + b) / 3 / 255
+              const factor = brightness * 0.5 + 0.5 // 保留一些明暗层次
+              
+              data[i] = Math.round(targetColor.r * factor)
+              data[i + 1] = Math.round(targetColor.g * factor)
+              data[i + 2] = Math.round(targetColor.b * factor)
+            }
+          }
+          
+          ctx.putImageData(imageData, 0, 0)
+          setColoredImagePath(canvas.toDataURL('image/png'))
+          setIsProcessing(false)
+        }
+        
+        img.onerror = () => {
+          console.error('图片加载失败')
+          setColoredImagePath(TSHIRT_BASE_URL)
+          setIsProcessing(false)
+        }
+        
+        img.src = TSHIRT_BASE_URL
+      } else {
+        // 小程序端使用Canvas
+        const query = Taro.createSelectorQuery()
+        query.select('#tshirtCanvas')
+          .fields({ node: true, size: true })
+          .exec((res) => {
+            if (!res[0] || !res[0].node) {
+              setColoredImagePath(TSHIRT_BASE_URL)
+              setIsProcessing(false)
+              return
+            }
+            
+            const canvas = res[0].node
+            const ctx = canvas.getContext('2d')
+            
+            const img = canvas.createImage()
+            img.onload = () => {
+              canvas.width = img.width
+              canvas.height = img.height
+              ctx.drawImage(img, 0, 0)
+              
+              const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+              const data = imageData.data
+              
+              for (let i = 0; i < data.length; i += 4) {
+                const r = data[i]
+                const g = data[i + 1]
+                const b = data[i + 2]
+                const a = data[i + 3]
+                
+                if (a > 0 && r > 200 && g > 200 && b > 200) {
+                  const brightness = (r + g + b) / 3 / 255
+                  const factor = brightness * 0.5 + 0.5
+                  
+                  data[i] = Math.round(targetColor.r * factor)
+                  data[i + 1] = Math.round(targetColor.g * factor)
+                  data[i + 2] = Math.round(targetColor.b * factor)
+                }
+              }
+              
+              ctx.putImageData(imageData, 0, 0)
+              
+              // 小程序导出图片
+              Taro.canvasToTempFilePath({
+                canvas: canvas,
+                success: (fileRes) => {
+                  setColoredImagePath(fileRes.tempFilePath)
+                },
+                fail: () => {
+                  setColoredImagePath(TSHIRT_BASE_URL)
+                },
+                complete: () => {
+                  setIsProcessing(false)
+                }
+              })
+            }
+            
+            img.onerror = () => {
+              setColoredImagePath(TSHIRT_BASE_URL)
+              setIsProcessing(false)
+            }
+            
+            img.src = TSHIRT_BASE_URL
+          })
+      }
+    } catch (error) {
+      console.error('颜色处理失败:', error)
+      setColoredImagePath(TSHIRT_BASE_URL)
+      setIsProcessing(false)
+    }
+  }
+
+  // 颜色变化时处理图片
+  useEffect(() => {
+    if (currentColor) {
+      changeTshirtColor(currentColor.hex)
+    }
+  }, [selectedColor])
 
   // 上传图片
   const handleUploadImage = async () => {
@@ -110,6 +265,14 @@ const DesignPage: FC = () => {
 
   return (
     <View className="flex flex-col bg-gray-100" style={{ height: 'calc(100vh - 50px)' }}>
+      {/* 隐藏的Canvas用于处理图片 */}
+      <Canvas 
+        id="tshirtCanvas" 
+        canvasId="tshirtCanvas"
+        type="2d"
+        style={{ position: 'absolute', left: '-9999px', width: '300px', height: '300px' }}
+      />
+      
       {/* 顶部标题栏 */}
       <View className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
         <View className="flex items-center gap-2">
@@ -126,16 +289,21 @@ const DesignPage: FC = () => {
         <View className="mx-4 mt-4 bg-white rounded-2xl overflow-hidden shadow-sm">
           <View 
             className="w-full flex items-center justify-center py-6"
-            style={{ backgroundColor: currentColor?.color || '#ffffff' }}
+            style={{ backgroundColor: '#f5f5f5' }}
           >
             <View className="relative w-full px-8">
               {/* T恤图片 */}
-              <Image 
-                src={TSHIRT_BASE_URL}
-                mode="widthFix"
-                className="w-full"
-                style={{ filter: currentColor?.filter || 'none' }}
-              />
+              {isProcessing ? (
+                <View className="w-full flex items-center justify-center" style={{ minHeight: '200px' }}>
+                  <Text className="block text-gray-400">处理中...</Text>
+                </View>
+              ) : (
+                <Image 
+                  src={coloredImagePath}
+                  mode="widthFix"
+                  className="w-full"
+                />
+              )}
               
               {/* 设计区域（Logo放置区域） */}
               <View 
@@ -238,7 +406,7 @@ const DesignPage: FC = () => {
                     selectedColor === option.id ? 'ring-2 ring-blue-600 ring-offset-2' : ''
                   }`}
                   style={{ 
-                    backgroundColor: option.color,
+                    backgroundColor: option.hex,
                     border: option.border ? '1px solid #e5e7eb' : 'none'
                   }}
                 />
