@@ -3,6 +3,7 @@ export default defineAppConfig({
     'pages/index/index',
     'pages/category/index',
     'pages/design/index',
+    'pages/about/index',
     'pages/product-detail/index',
     'pages/admin/index'
   ],
@@ -35,6 +36,12 @@ export default defineAppConfig({
         text: '设计',
         iconPath: './assets/tabbar/palette.png',
         selectedIconPath: './assets/tabbar/palette-active.png',
+      },
+      {
+        pagePath: 'pages/about/index',
+        text: '关于',
+        iconPath: './assets/tabbar/info.png',
+        selectedIconPath: './assets/tabbar/info-active.png',
       }
     ]
   }
