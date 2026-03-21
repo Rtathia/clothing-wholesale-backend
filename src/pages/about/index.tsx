@@ -7,7 +7,7 @@ const AboutPage: FC = () => {
   // 复制微信号
   const handleCopyWechat = () => {
     Taro.setClipboardData({
-      data: 'liule-fashion',
+      data: 'Tim163587',
       success: () => {
         Taro.showToast({ title: '微信号已复制', icon: 'success' })
       }
@@ -17,14 +17,14 @@ const AboutPage: FC = () => {
   // 拨打电话
   const handleCall = () => {
     Taro.makePhoneCall({
-      phoneNumber: '400-888-8888',
+      phoneNumber: '13556362913',
     })
   }
 
   // 复制邮箱
   const handleCopyEmail = () => {
     Taro.setClipboardData({
-      data: 'service@liule-fashion.com',
+      data: 'thx1755035817@gmail.com',
       success: () => {
         Taro.showToast({ title: '邮箱已复制', icon: 'success' })
       }
@@ -51,10 +51,10 @@ const AboutPage: FC = () => {
             <Text className="text-lg font-bold text-gray-900">公司简介</Text>
           </View>
           <Text className="block text-sm text-gray-600 leading-relaxed">
-            广州柳乐服饰有限公司成立于2010年，是一家专注于服装定制服务的现代化企业。公司坐落于广州市白云区，拥有现代化的生产车间和专业的设计团队。
+            广州柳乐服饰有限公司成立于2013年3月，是一家主营服装设计、生产及外贸销售的企业，公司拥有现代化的生产车间和专业的设计团队。
           </Text>
           <Text className="block text-sm text-gray-600 leading-relaxed mt-3">
-            我们致力于为企事业单位、团队组织、个人客户提供高品质的服装定制解决方案，产品涵盖POLO衫、T恤、卫衣、工作服等多个品类。
+            我们致力于为企事业单位、团队组织、个人客户提供高品质的服装定制解决方案，产品涵盖POLO衫、T恤、卫衣、工作制服等多个品类。
           </Text>
         </View>
 
@@ -65,7 +65,7 @@ const AboutPage: FC = () => {
             <Text className="text-lg font-bold text-gray-900">品牌故事</Text>
           </View>
           <Text className="block text-sm text-gray-600 leading-relaxed">
-            「柳乐」取自「柳暗花明，乐在其中」。创始人柳先生怀揣着对服装行业的热爱，从一个小作坊起步，经过十余年的发展，将柳乐服饰打造成行业知名品牌。
+            创始人陈先生怀揣着对服装行业的热爱，从一个小作坊起步，经过十余年的发展，将柳乐服饰打造成行业知名品牌。
           </Text>
           <Text className="block text-sm text-gray-600 leading-relaxed mt-3">
             我们始终坚持「品质为本，客户至上」的经营理念，用匠心打造每一件服装，让每一位客户都能穿上满意的定制服装。
@@ -159,7 +159,7 @@ const AboutPage: FC = () => {
                 <Text className="text-xl mr-3">📧</Text>
                 <View>
                   <Text className="block text-sm font-medium text-gray-900">电子邮箱</Text>
-                  <Text className="block text-xs text-gray-500">service@liule-fashion.com</Text>
+                  <Text className="block text-xs text-gray-500">thx1755035817@gmail.com</Text>
                 </View>
               </View>
               <View
@@ -174,7 +174,7 @@ const AboutPage: FC = () => {
               <Text className="text-xl mr-3">📍</Text>
               <View className="flex-1">
                 <Text className="block text-sm font-medium text-gray-900">公司地址</Text>
-                <Text className="block text-xs text-gray-500 mt-1">广东省广州市白云区XX路XX号XX产业园A栋</Text>
+                <Text className="block text-xs text-gray-500 mt-1">广东省广州市番禺区大石街道石北工业园G栋南梯4楼</Text>
               </View>
             </View>
           </View>
@@ -203,7 +203,7 @@ const AboutPage: FC = () => {
 
         {/* 底部版权 */}
         <View className="text-center py-6 px-4">
-          <Text className="block text-xs text-gray-400">© 2024 广州柳乐服饰有限公司</Text>
+          <Text className="block text-xs text-gray-400">© 2026 广州柳乐服饰有限公司</Text>
           <Text className="block text-xs text-gray-400 mt-1">All Rights Reserved</Text>
         </View>
       </ScrollView>
