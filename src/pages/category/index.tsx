@@ -198,20 +198,12 @@ const CategoryPage: FC = () => {
                     {product.name}
                   </Text>
                   
-                  {/* 标签信息 - 图片下方横向排列 */}
-                  <View className="flex flex-row flex-wrap gap-2 mt-2">
-                    <View className="px-2 py-1 bg-gray-100 rounded">
-                      <Text className="block text-xs text-gray-600">{product.category}</Text>
-                    </View>
-                    <View className="px-2 py-1 bg-gray-100 rounded">
-                      <Text className="block text-xs text-gray-600">{product.fit}</Text>
-                    </View>
-                    <View className="px-2 py-1 bg-gray-100 rounded">
-                      <Text className="block text-xs text-gray-600">{product.fabric}</Text>
-                    </View>
-                    <View className="px-2 py-1 bg-gray-100 rounded">
-                      <Text className="block text-xs text-gray-600">{product.style}</Text>
-                    </View>
+                  {/* 标签信息 - 垂直排列，分类：内容 格式 */}
+                  <View className="mt-2">
+                    <Text className="block text-xs text-gray-500">品类：{product.category}</Text>
+                    <Text className="block text-xs text-gray-500 mt-1">版型：{product.fit}</Text>
+                    <Text className="block text-xs text-gray-500 mt-1">材质：{product.fabric}</Text>
+                    <Text className="block text-xs text-gray-500 mt-1">款式：{product.style}</Text>
                   </View>
                   
                   {/* 价格 */}

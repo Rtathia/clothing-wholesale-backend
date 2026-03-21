@@ -24,8 +24,8 @@ const logoPositions = [
   { id: 'back', name: '背面', type: 'body' },
 ]
 
-// T恤基础图片URL（白色纯色T恤基础款）- 用户提供的正确图片
-const TSHIRT_BASE_URL = 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2Fimage.png&nonce=699dc3d1-fe12-42bc-b87c-f9f70d812122&project_id=7619676618268688390&sign=f1aaf1a5a9864621edb1885e413903ad586b122934f06fdfc37dd998fb9d8696'
+// T恤基础图片URL（白色纯色T恤基础款）
+const TSHIRT_BASE_URL = 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2Fimage.png&nonce=75c6e95c-db5e-4ea0-aa71-5f5c961091a6&project_id=7619676618268688390&sign=ba6b9f4c63c3f4efe2dbe6b0d0fdd5fad9f27548d65bdc029f7b253c62686b20'
 
 const DesignPage: FC = () => {
   const [selectedColor, setSelectedColor] = useState('white')
