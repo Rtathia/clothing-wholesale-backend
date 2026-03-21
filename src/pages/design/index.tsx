@@ -6,16 +6,14 @@ import { Button } from '@/components/ui/button'
 import { Network } from '@/network'
 import './index.css'
 
-// 颜色选项
+// 颜色选项（只保留6种颜色）
 const colorOptions = [
   { id: 'white', name: '白色', color: '#ffffff', filter: 'brightness(1)', border: true },
-  { id: 'black', name: '黑色', color: '#1a1a1a', filter: 'brightness(0.1)', border: false },
+  { id: 'black', name: '黑色', color: '#1a1a1a', filter: 'brightness(0.1) contrast(1.2)', border: false },
   { id: 'navy', name: '藏青', color: '#1e3a5f', filter: 'brightness(0.4) sepia(1) saturate(3) hue-rotate(180deg)', border: false },
-  { id: 'gray', name: '深灰', color: '#4a4a4a', filter: 'brightness(0.4)', border: false },
+  { id: 'dark-gray', name: '深灰', color: '#4a4a4a', filter: 'brightness(0.4) contrast(1.1)', border: false },
   { id: 'light-gray', name: '浅灰', color: '#c0c0c0', filter: 'brightness(0.85)', border: true },
-  { id: 'red', name: '红色', color: '#dc2626', filter: 'brightness(0.6) sepia(1) saturate(5) hue-rotate(-30deg)', border: false },
   { id: 'blue', name: '蓝色', color: '#2563eb', filter: 'brightness(0.5) sepia(1) saturate(5) hue-rotate(200deg)', border: false },
-  { id: 'green', name: '绿色', color: '#16a34a', filter: 'brightness(0.5) sepia(1) saturate(5) hue-rotate(80deg)', border: false },
 ]
 
 // Logo位置选项
@@ -26,22 +24,8 @@ const logoPositions = [
   { id: 'back', name: '背面', type: 'body' },
 ]
 
-// 使用纯SVG（不带中文注释）- T恤正面
-const TSHIRT_FRONT_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 350"><path d="M75,60 L45,75 L15,120 L35,135 L55,105 L55,320 L245,320 L245,105 L265,135 L285,120 L255,75 L225,60 L195,60 Q150,90 105,60 L75,60 Z" fill="white" stroke="#ddd" stroke-width="2"/><ellipse cx="150" cy="65" rx="45" ry="15" fill="#f8f8f8" stroke="#ddd" stroke-width="2"/><path d="M120,65 L150,100 L180,65" fill="none" stroke="#ddd" stroke-width="2"/></svg>`
-
-// T恤背面
-const TSHIRT_BACK_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 350"><path d="M75,60 L45,75 L15,120 L35,135 L55,105 L55,320 L245,320 L245,105 L265,135 L285,120 L255,75 L225,60 L195,60 Q150,80 105,60 L75,60 Z" fill="white" stroke="#ddd" stroke-width="2"/><ellipse cx="150" cy="65" rx="45" ry="12" fill="#f8f8f8" stroke="#ddd" stroke-width="2"/></svg>`
-
-// 左袖
-const SLEEVE_LEFT_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 150"><path d="M10,20 L5,25 L0,50 L15,55 L30,35 L35,10 L100,10 L100,130 L10,130 Z" fill="white" stroke="#ddd" stroke-width="2"/></svg>`
-
-// 右袖
-const SLEEVE_RIGHT_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 150"><path d="M110,20 L115,25 L120,50 L105,55 L90,35 L85,10 L20,10 L20,130 L110,130 Z" fill="white" stroke="#ddd" stroke-width="2"/></svg>`
-
-// 将SVG转为data URL（使用encodeURIComponent而不是btoa）
-const svgToDataUrl = (svg: string) => {
-  return `data:image/svg+xml,${encodeURIComponent(svg)}`
-}
+// T恤基础图片URL（白色纯色T恤基础款）
+const TSHIRT_BASE_URL = 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2Fimage.png&nonce=02184a69-d016-4d6b-955b-549f69ef8a72&project_id=7619676618268688390&sign=ee731de39d125d778f04c8762f6656634e3738c277b9549a9f5c1bdd5b595900'
 
 const DesignPage: FC = () => {
   const [selectedColor, setSelectedColor] = useState('white')
@@ -79,7 +63,7 @@ const DesignPage: FC = () => {
           name: 'file',
         })
       } catch (uploadError) {
-        console.log('Upload to server failed, using local path')
+        console.log('服务器上传失败，使用本地路径')
       }
 
       setUploadedLogos((prev) => ({
@@ -92,10 +76,10 @@ const DesignPage: FC = () => {
         },
       }))
 
-      Taro.showToast({ title: 'Upload success', icon: 'success' })
+      Taro.showToast({ title: '上传成功', icon: 'success' })
     } catch (error) {
-      console.error('Upload failed:', error)
-      Taro.showToast({ title: 'Upload failed', icon: 'none' })
+      console.error('上传失败:', error)
+      Taro.showToast({ title: '上传失败', icon: 'none' })
     } finally {
       setIsUploading(false)
     }
@@ -107,6 +91,7 @@ const DesignPage: FC = () => {
       ...prev,
       [selectedPosition]: { url: '', x: 0, y: 0, scale: 1 },
     }))
+    Taro.showToast({ title: '已删除', icon: 'success' })
   }
 
   // 移动logo
@@ -119,64 +104,52 @@ const DesignPage: FC = () => {
 
   // 保存设计
   const handleSaveDesign = () => {
-    console.log('Save design:', { color: selectedColor, logos: uploadedLogos })
-    Taro.showToast({ title: 'Design saved', icon: 'success' })
-  }
-
-  // 获取当前预览图
-  const getCurrentImage = () => {
-    if (currentPositionType === 'sleeve') {
-      return selectedPosition === 'left-sleeve' 
-        ? svgToDataUrl(SLEEVE_LEFT_SVG) 
-        : svgToDataUrl(SLEEVE_RIGHT_SVG)
-    }
-    return selectedPosition === 'back' 
-      ? svgToDataUrl(TSHIRT_BACK_SVG) 
-      : svgToDataUrl(TSHIRT_FRONT_SVG)
+    console.log('保存设计:', { color: selectedColor, logos: uploadedLogos })
+    Taro.showToast({ title: '设计已保存', icon: 'success' })
   }
 
   return (
     <View className="flex flex-col h-screen bg-gray-100">
-      {/* Header */}
+      {/* 顶部标题栏 */}
       <View className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
         <View className="flex items-center gap-2">
-          <Text className="block text-lg font-semibold text-gray-900">Design</Text>
-          <Text className="block text-sm text-gray-500">Basic T-Shirt</Text>
+          <Text className="block text-lg font-semibold text-gray-900">设计定制</Text>
+          <Text className="block text-sm text-gray-500">基础款T恤</Text>
         </View>
         <Button size="sm" onClick={handleSaveDesign} className="bg-blue-600 text-white">
-          Save
+          保存
         </Button>
       </View>
 
       <ScrollView scrollY className="flex-1">
-        {/* Preview Area */}
+        {/* T恤预览区域 */}
         <View className="mx-4 mt-4 bg-white rounded-2xl overflow-hidden shadow-sm">
           <View 
             className="w-full flex items-center justify-center py-6"
             style={{ backgroundColor: currentColor?.color || '#ffffff' }}
           >
-            <View className="relative w-full">
-              {/* T-shirt Image */}
+            <View className="relative w-full px-8">
+              {/* T恤图片 */}
               <Image 
-                src={getCurrentImage()}
+                src={TSHIRT_BASE_URL}
                 mode="widthFix"
                 className="w-full"
                 style={{ filter: currentColor?.filter || 'none' }}
               />
               
-              {/* Design Area */}
+              {/* 设计区域（Logo放置区域） */}
               <View 
                 className="absolute border-2 border-dashed border-blue-500 rounded"
                 style={currentPositionType === 'body' ? {
                   top: '28%',
-                  left: '22%',
-                  width: '56%',
-                  height: '40%',
+                  left: '26%',
+                  width: '48%',
+                  height: '35%',
                 } : {
-                  top: '15%',
-                  left: '20%',
-                  width: '35%',
-                  height: '30%',
+                  top: '12%',
+                  left: selectedPosition === 'left-sleeve' ? '5%' : '75%',
+                  width: '20%',
+                  height: '25%',
                 }}
               >
                 <MovableArea 
@@ -213,17 +186,17 @@ const DesignPage: FC = () => {
             </View>
           </View>
 
-          {/* Size hint */}
+          {/* 设计区域提示 */}
           <View className="px-4 py-2 bg-gray-50 border-t border-gray-100">
             <Text className="block text-xs text-gray-500">
-              Design area: {currentPositionType === 'body' ? 'Front/Back 20x25cm' : 'Sleeve 10x10cm'}
+              设计区域：{currentPositionType === 'body' ? '正面/背面 20x25cm' : '袖口 10x10cm'}
             </Text>
           </View>
         </View>
 
-        {/* Logo Position Selection */}
+        {/* Logo位置选择 */}
         <View className="mx-4 mt-4 p-4 bg-white rounded-xl">
-          <Text className="block text-sm font-semibold text-gray-900 mb-3">Logo Position</Text>
+          <Text className="block text-sm font-semibold text-gray-900 mb-3">选择Logo位置</Text>
           <View className="grid grid-cols-4 gap-2">
             {logoPositions.map((position) => (
               <View
@@ -243,17 +216,17 @@ const DesignPage: FC = () => {
                   {position.name}
                 </Text>
                 {uploadedLogos[position.id]?.url && (
-                  <Text className="block text-xs text-green-400 mt-1">OK</Text>
+                  <Text className="block text-xs text-green-400 mt-1">已添加</Text>
                 )}
               </View>
             ))}
           </View>
         </View>
 
-        {/* Color Selection */}
+        {/* 颜色选择 */}
         <View className="mx-4 mt-4 p-4 bg-white rounded-xl">
-          <Text className="block text-sm font-semibold text-gray-900 mb-3">Color</Text>
-          <View className="flex flex-wrap gap-3">
+          <Text className="block text-sm font-semibold text-gray-900 mb-3">更换颜色</Text>
+          <View className="flex flex-wrap gap-4 justify-center">
             {colorOptions.map((option) => (
               <View
                 key={option.id}
@@ -261,7 +234,7 @@ const DesignPage: FC = () => {
                 onClick={() => setSelectedColor(option.id)}
               >
                 <View
-                  className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  className={`w-12 h-12 rounded-full flex items-center justify-center ${
                     selectedColor === option.id ? 'ring-2 ring-blue-600 ring-offset-2' : ''
                   }`}
                   style={{ 
@@ -269,16 +242,16 @@ const DesignPage: FC = () => {
                     border: option.border ? '1px solid #e5e7eb' : 'none'
                   }}
                 />
-                <Text className="block text-xs text-gray-600 mt-1">{option.name}</Text>
+                <Text className="block text-xs text-gray-600 mt-2">{option.name}</Text>
               </View>
             ))}
           </View>
         </View>
 
-        {/* Upload Logo */}
+        {/* 上传Logo */}
         <View className="mx-4 mt-4 p-4 bg-white rounded-xl">
           <Text className="block text-sm font-semibold text-gray-900 mb-3">
-            Upload Logo - {logoPositions.find((p) => p.id === selectedPosition)?.name}
+            上传Logo - {logoPositions.find((p) => p.id === selectedPosition)?.name}
           </Text>
           
           {uploadedLogos[selectedPosition]?.url ? (
@@ -289,7 +262,7 @@ const DesignPage: FC = () => {
                 className="w-32 h-32 rounded-lg border border-gray-200"
               />
               <Text className="block text-xs text-gray-500 mt-2">
-                Drag to adjust position
+                拖动调整位置，双指缩放大小
               </Text>
               <View className="flex gap-2 mt-3">
                 <Button 
@@ -297,14 +270,14 @@ const DesignPage: FC = () => {
                   variant="outline" 
                   onClick={handleDeleteLogo}
                 >
-                  Delete
+                  删除
                 </Button>
                 <Button 
                   size="sm" 
                   onClick={handleUploadImage}
                   disabled={isUploading}
                 >
-                  {isUploading ? 'Uploading...' : 'Change'}
+                  {isUploading ? '上传中...' : '更换'}
                 </Button>
               </View>
             </View>
@@ -315,22 +288,22 @@ const DesignPage: FC = () => {
             >
               <Text className="block text-4xl text-gray-300 mb-2">+</Text>
               <Text className="block text-sm text-gray-500">
-                {isUploading ? 'Uploading...' : 'Click to upload logo'}
+                {isUploading ? '上传中...' : '点击上传Logo图片'}
               </Text>
             </View>
           )}
         </View>
 
-        {/* Tips */}
+        {/* 使用说明 */}
         <View className="mx-4 mt-4 mb-6 p-4 bg-blue-50 rounded-xl">
-          <Text className="block text-sm font-medium text-blue-800 mb-2">Tips</Text>
+          <Text className="block text-sm font-medium text-blue-800 mb-2">使用说明</Text>
           <Text className="block text-xs text-blue-600">
-            1. Select T-shirt color{'\n'}
-            2. Select logo position{'\n'}
-            3. Upload your logo{'\n'}
-            4. Drag to adjust position{'\n'}
-            5. Pinch to resize{'\n'}
-            6. Click Save
+            1. 选择T恤颜色{'\n'}
+            2. 选择Logo位置（左袖/右袖/正面/背面）{'\n'}
+            3. 上传您的Logo图片{'\n'}
+            4. 拖动调整Logo位置{'\n'}
+            5. 双指缩放调整Logo大小{'\n'}
+            6. 点击保存完成设计
           </Text>
         </View>
       </ScrollView>

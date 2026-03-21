@@ -1,4 +1,4 @@
-import { View, Text, ScrollView } from '@tarojs/components'
+import { View, Text, ScrollView, Image } from '@tarojs/components'
 import { useState } from 'react'
 import Taro from '@tarojs/taro'
 import type { FC } from 'react'
@@ -21,12 +21,12 @@ const fabricTypes = [
 
 // 模拟商品数据（添加详细标签）
 const mockProducts = [
-  { id: 1, name: '经典POLO衫', price: '89', category: 'POLO衫', style: '短袖', fabric: '纯棉', fit: '修身' },
-  { id: 2, name: '商务长袖POLO', price: '129', category: 'POLO衫', style: '长袖', fabric: '棉涤混纺', fit: '常规' },
-  { id: 3, name: '纯棉圆领T恤', price: '59', category: 'T恤', style: '短袖', fabric: '纯棉', fit: '宽松' },
-  { id: 4, name: '运动卫衣', price: '159', category: '卫衣', style: '套头', fabric: '纯涤', fit: '宽松' },
-  { id: 5, name: '休闲POLO衫', price: '99', category: 'POLO衫', style: '短袖', fabric: '棉涤混纺', fit: '常规' },
-  { id: 6, name: '印花T恤', price: '69', category: 'T恤', style: '短袖', fabric: '纯棉', fit: '修身' },
+  { id: 1, name: '经典POLO衫', price: '89', category: 'POLO衫', style: '短袖', fabric: '纯棉', fit: '修身', image: 'https://img.alicdn.com/imgextra/i4/2216685773707/O1CN01JhVTtS1h6CgZWN1Px_!!2216685773707.jpg_Q75.jpg_.webp' },
+  { id: 2, name: '商务长袖POLO', price: '129', category: 'POLO衫', style: '长袖', fabric: '棉涤混纺', fit: '常规', image: 'https://img.alicdn.com/imgextra/i1/2216685773707/O1CN01FQJNdr1h6CgXlPDdE_!!2216685773707.jpg_Q75.jpg_.webp' },
+  { id: 3, name: '纯棉圆领T恤', price: '59', category: 'T恤', style: '短袖', fabric: '纯棉', fit: '宽松', image: 'https://img.alicdn.com/imgextra/i3/2216685773707/O1CN01vXjLMT1h6CgWzZCFr_!!2216685773707.jpg_Q75.jpg_.webp' },
+  { id: 4, name: '运动卫衣', price: '159', category: '卫衣', style: '套头', fabric: '纯涤', fit: '宽松', image: 'https://img.alicdn.com/imgextra/i2/2216685773707/O1CN01xEeUet1h6CgQJcCBl_!!2216685773707.jpg_Q75.jpg_.webp' },
+  { id: 5, name: '休闲POLO衫', price: '99', category: 'POLO衫', style: '短袖', fabric: '棉涤混纺', fit: '常规', image: 'https://img.alicdn.com/imgextra/i4/2216685773707/O1CN01JhVTtS1h6CgZWN1Px_!!2216685773707.jpg_Q75.jpg_.webp' },
+  { id: 6, name: '印花T恤', price: '69', category: 'T恤', style: '短袖', fabric: '纯棉', fit: '修身', image: 'https://img.alicdn.com/imgextra/i3/2216685773707/O1CN01vXjLMT1h6CgWzZCFr_!!2216685773707.jpg_Q75.jpg_.webp' },
 ]
 
 const CategoryPage: FC = () => {
@@ -122,39 +122,43 @@ const CategoryPage: FC = () => {
       </View>
 
       {/* 右侧商品区 */}
-      <ScrollView scrollY className="flex-1 p-2">
+      <ScrollView scrollY className="flex-1 p-3">
         {/* 筛选结果提示 */}
         {(selectedStyle || selectedFabric) && (
-          <View className="mb-2 px-3 py-2 bg-blue-50 rounded-lg">
+          <View className="mb-3 px-3 py-2 bg-blue-50 rounded-lg">
             <Text className="block text-sm text-blue-600">
               已筛选 {filteredProducts.length} 件商品
             </Text>
           </View>
         )}
 
-        {/* 商品列表 - 两列布局 */}
-        <View className="flex flex-row flex-wrap justify-between">
+        {/* 商品列表 - 单列布局 */}
+        <View className="flex flex-col gap-3">
           {filteredProducts.map((product) => (
             <View
               key={product.id}
-              className="w-[48%] bg-white rounded-lg overflow-hidden shadow-sm mb-2"
+              className="bg-white rounded-xl overflow-hidden shadow-sm"
               onClick={() => {
                 Taro.navigateTo({ url: `/pages/product-detail/index?id=${product.id}` })
               }}
             >
-              {/* 商品图片占位 */}
-              <View className="w-full h-36 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                <Text className="block text-4xl text-gray-300">👕</Text>
+              {/* 商品图片 */}
+              <View className="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                <Image 
+                  src={product.image}
+                  mode="aspectFit"
+                  className="w-full h-full"
+                />
               </View>
               
               {/* 商品信息 */}
-              <View className="p-2">
-                <Text className="block text-sm font-medium text-gray-900 truncate">
+              <View className="p-3">
+                <Text className="block text-base font-medium text-gray-900">
                   {product.name}
                 </Text>
                 
-                {/* 标签信息 */}
-                <View className="flex flex-wrap gap-1 mt-1">
+                {/* 标签信息 - 图片下方横向排列 */}
+                <View className="flex flex-row flex-wrap gap-2 mt-2">
                   <View className="px-2 py-1 bg-gray-100 rounded">
                     <Text className="block text-xs text-gray-600">{product.category}</Text>
                   </View>
@@ -172,7 +176,7 @@ const CategoryPage: FC = () => {
                 {/* 价格 */}
                 <View className="flex items-baseline mt-2">
                   <Text className="block text-xs text-orange-500">¥</Text>
-                  <Text className="block text-lg font-bold text-orange-500">
+                  <Text className="block text-xl font-bold text-orange-500">
                     {product.price}
                   </Text>
                 </View>
