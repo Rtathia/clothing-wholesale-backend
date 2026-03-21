@@ -12,21 +12,21 @@ const styleTypes = [
   { id: 'hoodie', name: '卫衣', icon: '🎽' },
 ]
 
-// 布料类型数据（添加图标，与款式类型样式一致）
+// 布料类型数据
 const fabricTypes = [
-  { id: 'cotton', name: '纯棉', icon: '🌿', desc: '透气舒适' },
-  { id: 'polyester', name: '纯涤', icon: '🔬', desc: '耐磨易打理' },
-  { id: 'blend', name: '棉涤混纺', icon: '🧵', desc: '兼顾优点' },
+  { id: 'cotton', name: '纯棉', icon: '🌿' },
+  { id: 'polyester', name: '纯涤', icon: '🔬' },
+  { id: 'blend', name: '棉涤混纺', icon: '🧵' },
 ]
 
-// 模拟商品数据
+// 模拟商品数据（添加详细标签）
 const mockProducts = [
-  { id: 1, name: '经典POLO衫', price: '89', image: '', style: 'polo-short', fabric: 'cotton' },
-  { id: 2, name: '商务长袖POLO', price: '129', image: '', style: 'polo-long', fabric: 'blend' },
-  { id: 3, name: '纯棉圆领T恤', price: '59', image: '', style: 'tshirt', fabric: 'cotton' },
-  { id: 4, name: '运动卫衣', price: '159', image: '', style: 'hoodie', fabric: 'polyester' },
-  { id: 5, name: '休闲POLO衫', price: '99', image: '', style: 'polo-short', fabric: 'blend' },
-  { id: 6, name: '印花T恤', price: '69', image: '', style: 'tshirt', fabric: 'cotton' },
+  { id: 1, name: '经典POLO衫', price: '89', category: 'POLO衫', style: '短袖', fabric: '纯棉', fit: '修身' },
+  { id: 2, name: '商务长袖POLO', price: '129', category: 'POLO衫', style: '长袖', fabric: '棉涤混纺', fit: '常规' },
+  { id: 3, name: '纯棉圆领T恤', price: '59', category: 'T恤', style: '短袖', fabric: '纯棉', fit: '宽松' },
+  { id: 4, name: '运动卫衣', price: '159', category: '卫衣', style: '套头', fabric: '纯涤', fit: '宽松' },
+  { id: 5, name: '休闲POLO衫', price: '99', category: 'POLO衫', style: '短袖', fabric: '棉涤混纺', fit: '常规' },
+  { id: 6, name: '印花T恤', price: '69', category: 'T恤', style: '短袖', fabric: '纯棉', fit: '修身' },
 ]
 
 const CategoryPage: FC = () => {
@@ -35,8 +35,15 @@ const CategoryPage: FC = () => {
 
   // 筛选商品
   const filteredProducts = mockProducts.filter((product) => {
-    if (selectedStyle && product.style !== selectedStyle) return false
-    if (selectedFabric && product.fabric !== selectedFabric) return false
+    if (selectedStyle === 'polo-short' && !product.category.includes('POLO')) return false
+    if (selectedStyle === 'polo-short' && !product.style.includes('短')) return false
+    if (selectedStyle === 'polo-long' && !product.category.includes('POLO')) return false
+    if (selectedStyle === 'polo-long' && !product.style.includes('长')) return false
+    if (selectedStyle === 'tshirt' && !product.category.includes('T恤')) return false
+    if (selectedStyle === 'hoodie' && !product.category.includes('卫衣')) return false
+    if (selectedFabric === 'cotton' && product.fabric !== '纯棉') return false
+    if (selectedFabric === 'polyester' && product.fabric !== '纯涤') return false
+    if (selectedFabric === 'blend' && product.fabric !== '棉涤混纺') return false
     return true
   })
 
@@ -115,17 +122,17 @@ const CategoryPage: FC = () => {
       </View>
 
       {/* 右侧商品区 */}
-      <ScrollView scrollY className="flex-1 p-3">
+      <ScrollView scrollY className="flex-1 p-2">
         {/* 筛选结果提示 */}
         {(selectedStyle || selectedFabric) && (
-          <View className="mb-3 px-3 py-2 bg-blue-50 rounded-lg">
+          <View className="mb-2 px-3 py-2 bg-blue-50 rounded-lg">
             <Text className="block text-sm text-blue-600">
               已筛选 {filteredProducts.length} 件商品
             </Text>
           </View>
         )}
 
-        {/* 商品网格 - 两列布局 */}
+        {/* 商品列表 - 两列布局 */}
         <View className="flex flex-row flex-wrap justify-between">
           {filteredProducts.map((product) => (
             <View
@@ -136,15 +143,34 @@ const CategoryPage: FC = () => {
               }}
             >
               {/* 商品图片占位 */}
-              <View className="w-full h-32 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+              <View className="w-full h-36 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                 <Text className="block text-4xl text-gray-300">👕</Text>
               </View>
+              
               {/* 商品信息 */}
               <View className="p-2">
                 <Text className="block text-sm font-medium text-gray-900 truncate">
                   {product.name}
                 </Text>
-                <View className="flex items-baseline mt-1">
+                
+                {/* 标签信息 */}
+                <View className="flex flex-wrap gap-1 mt-1">
+                  <View className="px-2 py-1 bg-gray-100 rounded">
+                    <Text className="block text-xs text-gray-600">{product.category}</Text>
+                  </View>
+                  <View className="px-2 py-1 bg-gray-100 rounded">
+                    <Text className="block text-xs text-gray-600">{product.fit}</Text>
+                  </View>
+                  <View className="px-2 py-1 bg-gray-100 rounded">
+                    <Text className="block text-xs text-gray-600">{product.fabric}</Text>
+                  </View>
+                  <View className="px-2 py-1 bg-gray-100 rounded">
+                    <Text className="block text-xs text-gray-600">{product.style}</Text>
+                  </View>
+                </View>
+                
+                {/* 价格 */}
+                <View className="flex items-baseline mt-2">
                   <Text className="block text-xs text-orange-500">¥</Text>
                   <Text className="block text-lg font-bold text-orange-500">
                     {product.price}
@@ -162,6 +188,9 @@ const CategoryPage: FC = () => {
             <Text className="block text-gray-400">暂无符合条件的商品</Text>
           </View>
         )}
+        
+        {/* 底部间距 */}
+        <View className="h-4" />
       </ScrollView>
     </View>
   )
