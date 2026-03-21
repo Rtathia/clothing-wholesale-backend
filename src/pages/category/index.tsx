@@ -19,10 +19,11 @@ interface Product {
   style_id: number | null
 }
 
-// 分类数据类型
+// 分类数据类型（带图标）
 interface Category {
   id: number
   name: string
+  icon?: string | null
 }
 
 const CategoryPage: FC = () => {
@@ -119,7 +120,7 @@ const CategoryPage: FC = () => {
       <View className="flex flex-1">
         {/* 左侧筛选区 */}
         <View className="w-24 bg-white border-r border-gray-200 flex flex-col">
-          {/* 款式类型 */}
+          {/* 品类 */}
           <View className="p-2 border-b border-gray-100">
             <Text className="block text-xs font-semibold text-gray-700 mb-2">品类</Text>
             <View className="flex flex-col gap-1">
@@ -135,8 +136,9 @@ const CategoryPage: FC = () => {
                     selectedCategoryId === category.id ? null : category.id
                   )}
                 >
+                  <Text className="block text-lg">{category.icon || '👕'}</Text>
                   <Text
-                    className={`block text-xs ${
+                    className={`block text-xs mt-1 ${
                       selectedCategoryId === category.id ? 'text-white' : 'text-gray-700'
                     }`}
                   >
@@ -147,7 +149,7 @@ const CategoryPage: FC = () => {
             </View>
           </View>
 
-          {/* 布料类型 */}
+          {/* 布料 */}
           <View className="p-2 border-b border-gray-100">
             <Text className="block text-xs font-semibold text-gray-700 mb-2">布料</Text>
             <View className="flex flex-col gap-1">
@@ -163,8 +165,9 @@ const CategoryPage: FC = () => {
                     selectedFabricId === fabric.id ? null : fabric.id
                   )}
                 >
+                  <Text className="block text-lg">{fabric.icon || '🌿'}</Text>
                   <Text
-                    className={`block text-xs ${
+                    className={`block text-xs mt-1 ${
                       selectedFabricId === fabric.id ? 'text-white' : 'text-gray-700'
                     }`}
                   >
@@ -175,7 +178,7 @@ const CategoryPage: FC = () => {
             </View>
           </View>
 
-          {/* 工艺类型 */}
+          {/* 工艺 */}
           <View className="p-2 flex-1">
             <Text className="block text-xs font-semibold text-gray-700 mb-2">工艺</Text>
             <View className="flex flex-col gap-1">
@@ -191,8 +194,9 @@ const CategoryPage: FC = () => {
                     selectedCraftId === craft.id ? null : craft.id
                   )}
                 >
+                  <Text className="block text-lg">{craft.icon || '🖨️'}</Text>
                   <Text
-                    className={`block text-xs ${
+                    className={`block text-xs mt-1 ${
                       selectedCraftId === craft.id ? 'text-white' : 'text-gray-700'
                     }`}
                   >

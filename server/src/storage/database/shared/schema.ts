@@ -93,6 +93,11 @@ export const products = pgTable("products", {
 	fitId: integer("fit_id"),
 	styleId: integer("style_id"),
 	
+	// 详情内容（JSON数组格式存储图片URL）
+	detailImages: text("detail_images"), // 商品详情图片，JSON数组
+	videos: text("videos"), // 实拍视频，JSON数组
+	photos: text("photos"), // 实拍图，JSON数组
+	
 	// 状态
 	isActive: boolean("is_active").default(true),
 	sortOrder: integer("sort_order").default(0),

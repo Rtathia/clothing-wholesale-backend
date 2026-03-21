@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Image, Swiper, SwiperItem } from '@tarojs/components'
+import { View, Text, ScrollView, Image, Swiper, SwiperItem, Video } from '@tarojs/components'
 import { useState, useEffect } from 'react'
 import Taro, { useRouter } from '@tarojs/taro'
 import type { FC } from 'react'
@@ -17,20 +17,15 @@ interface Product {
   craft_id: number | null
   fit_id: number | null
   style_id: number | null
+  detail_images: string | null // JSON数组字符串
+  videos: string | null // JSON数组字符串
+  photos: string | null // JSON数组字符串
 }
 
 // 分类数据类型
 interface Category {
   id: number
   name: string
-}
-
-// T恤颜色类型
-interface TshirtColor {
-  id: number
-  name: string
-  color_code: string | null
-  image_url: string
 }
 
 // 尺码选项
@@ -49,16 +44,19 @@ const ProductDetailPage: FC = () => {
   const router = useRouter()
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
-  const [selectedColor, setSelectedColor] = useState<TshirtColor | null>(null)
   const [selectedSize, setSelectedSize] = useState<string>('')
   const [activeTab, setActiveTab] = useState<'detail' | 'video' | 'photos'>('detail')
-  const [tshirtColors, setTshirtColors] = useState<TshirtColor[]>([])
   
   // 分类数据
   const [categories, setCategories] = useState<Category[]>([])
   const [fabrics, setFabrics] = useState<Category[]>([])
   const [fits, setFits] = useState<Category[]>([])
   const [styles, setStyles] = useState<Category[]>([])
+
+  // 解析后的图片/视频数据
+  const [detailImages, setDetailImages] = useState<string[]>([])
+  const [videos, setVideos] = useState<string[]>([])
+  const [photos, setPhotos] = useState<string[]>([])
 
   // 获取产品详情
   useEffect(() => {
@@ -70,7 +68,6 @@ const ProductDetailPage: FC = () => {
 
     fetchProductDetail(parseInt(productId, 10))
     fetchFilterData()
-    fetchTshirtColors()
   }, [router.params.id])
 
   const fetchProductDetail = async (id: number) => {
@@ -79,7 +76,31 @@ const ProductDetailPage: FC = () => {
         url: `/api/shop/products/${id}`,
       })
       console.log('产品详情响应:', res.data)
-      setProduct(res.data.data || res.data)
+      const data = res.data.data || res.data
+      setProduct(data)
+      
+      // 解析图片和视频数据
+      if (data.detail_images) {
+        try {
+          setDetailImages(JSON.parse(data.detail_images))
+        } catch (e) {
+          console.error('解析详情图片失败:', e)
+        }
+      }
+      if (data.videos) {
+        try {
+          setVideos(JSON.parse(data.videos))
+        } catch (e) {
+          console.error('解析视频失败:', e)
+        }
+      }
+      if (data.photos) {
+        try {
+          setPhotos(JSON.parse(data.photos))
+        } catch (e) {
+          console.error('解析实拍图失败:', e)
+        }
+      }
     } catch (error) {
       console.error('获取产品详情失败:', error)
       Taro.showToast({ title: '获取产品详情失败', icon: 'none' })
@@ -104,22 +125,6 @@ const ProductDetailPage: FC = () => {
     }
   }
 
-  const fetchTshirtColors = async () => {
-    try {
-      const res = await Network.request({
-        url: '/api/shop/tshirt-colors',
-      })
-      console.log('T恤颜色响应:', res.data)
-      const colors = res.data.data || res.data
-      setTshirtColors(colors)
-      if (colors.length > 0) {
-        setSelectedColor(colors[0])
-      }
-    } catch (error) {
-      console.error('获取T恤颜色失败:', error)
-    }
-  }
-
   // 获取分类名称
   const getCategoryName = (type: string, id: number | null): string => {
     if (!id) return '-'
@@ -133,16 +138,12 @@ const ProductDetailPage: FC = () => {
 
   // 立即定制
   const handleCustomize = () => {
-    if (!selectedColor) {
-      Taro.showToast({ title: '请选择颜色', icon: 'none' })
-      return
-    }
     if (!selectedSize) {
       Taro.showToast({ title: '请选择尺码', icon: 'none' })
       return
     }
     
-    // 跳转到设计页，传递参数
+    // 跳转到设计页
     Taro.switchTab({ 
       url: '/pages/design/index'
     })
@@ -151,6 +152,14 @@ const ProductDetailPage: FC = () => {
   // 格式化价格
   const formatPrice = (price: number): string => {
     return (price / 100).toFixed(2)
+  }
+
+  // 图片预览
+  const handleImagePreview = (urls: string[], current: number) => {
+    Taro.previewImage({
+      urls,
+      current: urls[current]
+    })
   }
 
   if (loading) {
@@ -239,35 +248,6 @@ const ProductDetailPage: FC = () => {
             <View className="w-8 h-1 bg-orange-500 ml-2" />
           </View>
 
-          {/* 颜色选择 */}
-          <View className="mb-4">
-            <View className="flex items-center mb-2">
-              <Text className="text-sm text-gray-700">颜色</Text>
-              {selectedColor && (
-                <Text className="text-sm text-gray-500 ml-2">已选：{selectedColor.name}</Text>
-              )}
-            </View>
-            <View className="flex flex-wrap gap-2">
-              {tshirtColors.map((color) => (
-                <View
-                  key={color.id}
-                  className={`w-16 h-16 rounded-lg overflow-hidden border-2 ${
-                    selectedColor?.id === color.id 
-                      ? 'border-orange-500' 
-                      : 'border-gray-200'
-                  }`}
-                  onClick={() => setSelectedColor(color)}
-                >
-                  <Image 
-                    src={color.image_url}
-                    mode="aspectFit"
-                    className="w-full h-full"
-                  />
-                </View>
-              ))}
-            </View>
-          </View>
-
           {/* 尺码选择 */}
           <View>
             <View className="flex items-center mb-2">
@@ -332,21 +312,75 @@ const ProductDetailPage: FC = () => {
           
           {/* 内容区域 */}
           <View className="p-4">
+            {/* 商品详情图片 */}
             {activeTab === 'detail' && (
               <View>
-                <Text className="block text-sm text-gray-600">
-                  {product.description || '暂无详细描述'}
-                </Text>
+                {detailImages.length > 0 ? (
+                  <View className="flex flex-col gap-2">
+                    {detailImages.map((img, index) => (
+                      <Image
+                        key={index}
+                        src={img}
+                        mode="widthFix"
+                        className="w-full"
+                        onClick={() => handleImagePreview(detailImages, index)}
+                      />
+                    ))}
+                  </View>
+                ) : (
+                  <View className="flex items-center justify-center py-10">
+                    <Text className="text-gray-400">暂无商品详情图片</Text>
+                  </View>
+                )}
               </View>
             )}
+            
+            {/* 实拍视频 */}
             {activeTab === 'video' && (
-              <View className="flex items-center justify-center py-10">
-                <Text className="text-gray-400">暂无视频</Text>
+              <View>
+                {videos.length > 0 ? (
+                  <View className="flex flex-col gap-4">
+                    {videos.map((videoUrl, index) => (
+                      <Video
+                        key={index}
+                        src={videoUrl}
+                        className="w-full"
+                        style={{ height: '200px' }}
+                        controls
+                        showFullscreenBtn
+                        showPlayBtn
+                        showCenterPlayBtn
+                      />
+                    ))}
+                  </View>
+                ) : (
+                  <View className="flex items-center justify-center py-10">
+                    <Text className="text-gray-400">暂无实拍视频</Text>
+                  </View>
+                )}
               </View>
             )}
+            
+            {/* 实拍图 */}
             {activeTab === 'photos' && (
-              <View className="flex items-center justify-center py-10">
-                <Text className="text-gray-400">暂无实拍图</Text>
+              <View>
+                {photos.length > 0 ? (
+                  <View className="flex flex-col gap-2">
+                    {photos.map((img, index) => (
+                      <Image
+                        key={index}
+                        src={img}
+                        mode="widthFix"
+                        className="w-full"
+                        onClick={() => handleImagePreview(photos, index)}
+                      />
+                    ))}
+                  </View>
+                ) : (
+                  <View className="flex items-center justify-center py-10">
+                    <Text className="text-gray-400">暂无实拍图</Text>
+                  </View>
+                )}
               </View>
             )}
           </View>
