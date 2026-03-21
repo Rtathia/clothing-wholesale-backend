@@ -4,16 +4,12 @@ import Taro from '@tarojs/taro'
 import type { FC } from 'react'
 import './index.css'
 
-// 导航图标数据
+// 导航图标数据（4个）
 const navItems = [
   { id: 'all', name: '全部产品', icon: '📦', color: 'bg-blue-50' },
-  { id: 'new', name: '季节新品', icon: '🆕', color: 'bg-green-50' },
   { id: 'polo', name: 'POLO系列', icon: '👕', color: 'bg-orange-50' },
-  { id: 'price', name: '价格区间', icon: '💰', color: 'bg-yellow-50' },
   { id: 'tshirt', name: 'T恤系列', icon: '👔', color: 'bg-purple-50' },
   { id: 'hoodie', name: '卫衣系列', icon: '🎽', color: 'bg-pink-50' },
-  { id: 'custom', name: '定制专区', icon: '✨', color: 'bg-indigo-50' },
-  { id: 'hot', name: '热销榜单', icon: '🔥', color: 'bg-red-50' },
 ]
 
 // Banner数据
@@ -35,12 +31,8 @@ const HomePage: FC = () => {
 
   // 导航点击
   const handleNavClick = (id: string) => {
-    if (id === 'custom') {
-      Taro.switchTab({ url: '/pages/design/index' })
-    } else if (id === 'all' || id === 'polo' || id === 'tshirt' || id === 'hoodie') {
+    if (id === 'all' || id === 'polo' || id === 'tshirt' || id === 'hoodie') {
       Taro.switchTab({ url: '/pages/category/index' })
-    } else {
-      Taro.showToast({ title: '功能开发中', icon: 'none' })
     }
   }
 
@@ -51,7 +43,7 @@ const HomePage: FC = () => {
         <View className="px-4 py-3">
           <View className="flex items-center gap-3">
             {/* Logo/品牌名 */}
-            <Text className="block text-lg font-bold text-gray-900">服装定制</Text>
+            <Text className="block text-base font-bold text-gray-900">广州柳乐服饰有限公司</Text>
             {/* 搜索框 */}
             <View className="flex-1 flex items-center bg-gray-100 rounded-full px-4 py-2">
               <Text className="block text-gray-400 mr-2">🔍</Text>
