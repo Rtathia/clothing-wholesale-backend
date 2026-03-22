@@ -16,11 +16,7 @@ const navItems = [
 const bannerItems = [
   { 
     id: 1, 
-    imageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2Fimage.png&nonce=634ac570-061e-4c97-9912-6c6861293725&project_id=7619676618268688390&sign=ee19bf6cbe8a0c71cab737e5b092f9a541a79bdbafe4ab818704cc5e8ba6db35' 
-  },
-  { 
-    id: 2, 
-    imageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F333.png&nonce=5e8d632b-517e-4a7e-8916-dd59013b85e3&project_id=7619676618268688390&sign=556257f9b31d2e51e9452445cfce3d8e051f2badc345f23138e9af542c0a544e' 
+    imageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F1.jpeg&nonce=87a185cd-6f6d-4b60-bcc3-92ea977211f8&project_id=7619676618268688390&sign=db899c68d9bca2b5de69ebe70356ddfbc7d9fd16d6be983133556833a0ba0301' 
   },
 ]
 
