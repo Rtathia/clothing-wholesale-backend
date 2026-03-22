@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/button'
 import { Network } from '@/network'
 import './index.css'
 
+// 袖子颜色图片（左袖和右袖统一使用这张图）
+const SLEEVE_IMAGE_URL = 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2Fimage.png&nonce=b34f00f2-d677-492c-ac96-6edb755e65aa&project_id=7619676618268688390&sign=242ab84427244813ae27f30e5e5aa3f68c81f4e5bc6208c04467b0c1f8196cac'
+
 // 颜色选项与对应图片URL
 const colorOptions = [
   { id: 'white', name: '白色', border: true, imageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E7%99%BD%E8%89%B2.png&nonce=9617b1c1-7651-4843-b824-89cb0e5bf652&project_id=7619676618268688390&sign=0adac256c30015bf2724b814a885d6a06986f3ebdc0e05fc7e7f9a565ca6143c' },
@@ -126,9 +129,9 @@ const DesignPage: FC = () => {
             style={{ backgroundColor: '#f5f5f5' }}
           >
             <View className="relative w-full px-8">
-              {/* T恤图片 - 根据选中颜色显示对应图片 */}
+              {/* 图片 - 根据位置类型显示不同图片 */}
               <Image 
-                src={currentColor?.imageUrl || colorOptions[0].imageUrl}
+                src={currentPositionType === 'sleeve' ? SLEEVE_IMAGE_URL : (currentColor?.imageUrl || colorOptions[0].imageUrl)}
                 mode="widthFix"
                 className="w-full"
               />
@@ -219,33 +222,55 @@ const DesignPage: FC = () => {
           </View>
         </View>
 
-        {/* 颜色选择 */}
+        {/* 颜色选择 - 袖子位置显示袖子样式，身体位置显示颜色选项 */}
         <View className="mx-4 mt-4 p-4 bg-white rounded-xl">
-          <Text className="block text-sm font-semibold text-gray-900 mb-3">更换颜色</Text>
-          <View className="flex flex-wrap gap-4 justify-center">
-            {colorOptions.map((option) => (
-              <View
-                key={option.id}
-                className="flex flex-col items-center"
-                onClick={() => setSelectedColor(option.id)}
-              >
-                <View
-                  className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                    selectedColor === option.id ? 'ring-2 ring-blue-600 ring-offset-2' : ''
+          {currentPositionType === 'sleeve' ? (
+            <>
+              <Text className="block text-sm font-semibold text-gray-900 mb-3">袖子样式</Text>
+              <View className="flex justify-center">
+                <View 
+                  className={`w-32 h-32 rounded-xl border-2 overflow-hidden ${
+                    'border-blue-600 ring-2 ring-blue-600 ring-offset-2'
                   }`}
-                  style={{ 
-                    backgroundColor: option.id === 'white' ? '#ffffff' : 
-                                    option.id === 'black' ? '#1a1a1a' :
-                                    option.id === 'navy' ? '#1e3a5f' :
-                                    option.id === 'dark-gray' ? '#4a4a4a' :
-                                    option.id === 'light-gray' ? '#c0c0c0' : '#2563eb',
-                    border: option.border ? '1px solid #e5e7eb' : 'none'
-                  }}
-                />
-                <Text className="block text-xs text-gray-600 mt-2">{option.name}</Text>
+                >
+                  <Image 
+                    src={SLEEVE_IMAGE_URL}
+                    mode="aspectFit"
+                    className="w-full h-full"
+                  />
+                </View>
               </View>
-            ))}
-          </View>
+              <Text className="block text-xs text-gray-500 text-center mt-2">统一袖子样式</Text>
+            </>
+          ) : (
+            <>
+              <Text className="block text-sm font-semibold text-gray-900 mb-3">更换颜色</Text>
+              <View className="flex flex-wrap gap-4 justify-center">
+                {colorOptions.map((option) => (
+                  <View
+                    key={option.id}
+                    className="flex flex-col items-center"
+                    onClick={() => setSelectedColor(option.id)}
+                  >
+                    <View
+                      className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                        selectedColor === option.id ? 'ring-2 ring-blue-600 ring-offset-2' : ''
+                      }`}
+                      style={{ 
+                        backgroundColor: option.id === 'white' ? '#ffffff' : 
+                                        option.id === 'black' ? '#1a1a1a' :
+                                        option.id === 'navy' ? '#1e3a5f' :
+                                        option.id === 'dark-gray' ? '#4a4a4a' :
+                                        option.id === 'light-gray' ? '#c0c0c0' : '#2563eb',
+                        border: option.border ? '1px solid #e5e7eb' : 'none'
+                      }}
+                    />
+                    <Text className="block text-xs text-gray-600 mt-2">{option.name}</Text>
+                  </View>
+                ))}
+              </View>
+            </>
+          )}
         </View>
 
         {/* 上传Logo */}
