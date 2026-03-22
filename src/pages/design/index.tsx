@@ -123,17 +123,18 @@ const DesignPage: FC = () => {
 
       <ScrollView scrollY className="flex-1">
         {/* T恤预览区域 */}
-        <View className="mx-4 mt-4 bg-white rounded-2xl overflow-hidden shadow-sm">
+        <View className="mx-4 mt-4 bg-white rounded-2xl shadow-sm">
           <View 
-            className="w-full flex items-center justify-center py-6"
-            style={{ backgroundColor: '#f5f5f5' }}
+            className={`w-full flex items-center justify-center ${currentPositionType === 'sleeve' ? 'py-4' : 'py-6'}`}
+            style={{ backgroundColor: '#f5f5f5', borderRadius: '16px', minHeight: currentPositionType === 'sleeve' ? '400px' : 'auto' }}
           >
-            <View className="relative w-full px-8">
+            <View className={`relative w-full ${currentPositionType === 'sleeve' ? 'px-4' : 'px-8'}`}>
               {/* 图片 - 根据位置类型显示不同图片 */}
               <Image 
                 src={currentPositionType === 'sleeve' ? SLEEVE_IMAGE_URL : (currentColor?.imageUrl || colorOptions[0].imageUrl)}
-                mode="widthFix"
+                mode={currentPositionType === 'sleeve' ? 'aspectFit' : 'widthFix'}
                 className="w-full"
+                style={{ display: 'block', width: currentPositionType === 'sleeve' ? '60%' : '100%', margin: currentPositionType === 'sleeve' ? '0 auto' : '0' }}
               />
               
               {/* 设计区域（Logo放置区域） */}
