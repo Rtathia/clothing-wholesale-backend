@@ -44,8 +44,31 @@ const CategoryPage: FC = () => {
   // 获取筛选数据和产品列表
   useEffect(() => {
     fetchFilterData()
-    fetchProducts()
   }, [])
+
+  // 分类数据加载完成后，检查是否有来自首页的筛选参数
+  useEffect(() => {
+    const filterFromHome = Taro.getStorageSync('categoryFilter')
+    if (filterFromHome && categories.length > 0) {
+      // 清除存储的筛选参数
+      Taro.removeStorageSync('categoryFilter')
+      
+      // 根据首页传来的筛选类型找到对应的分类ID
+      const categoryMap: Record<string, string> = {
+        'polo': 'POLO',
+        'tshirt': 'T恤',
+        'hoodie': '卫衣',
+      }
+      
+      const targetName = categoryMap[filterFromHome]
+      if (targetName) {
+        const targetCategory = categories.find(c => c.name.includes(targetName))
+        if (targetCategory) {
+          setSelectedCategoryId(targetCategory.id)
+        }
+      }
+    }
+  }, [categories])
 
   // 筛选变化时重新获取产品
   useEffect(() => {

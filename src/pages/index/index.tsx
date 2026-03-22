@@ -32,6 +32,8 @@ const HomePage: FC = () => {
   // 导航点击
   const handleNavClick = (id: string) => {
     if (id === 'all' || id === 'polo' || id === 'tshirt' || id === 'hoodie') {
+      // 存储筛选参数到全局状态
+      Taro.setStorageSync('categoryFilter', id)
       Taro.switchTab({ url: '/pages/category/index' })
     }
   }
