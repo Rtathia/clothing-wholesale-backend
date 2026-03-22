@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, Image } from '@tarojs/components'
 import { useState, useEffect } from 'react'
-import Taro from '@tarojs/taro'
+import Taro, { useDidShow } from '@tarojs/taro'
 import type { FC } from 'react'
 import { Network } from '@/network'
 import './index.css'
@@ -46,14 +46,14 @@ const CategoryPage: FC = () => {
     fetchFilterData()
   }, [])
 
-  // 分类数据加载完成后，检查是否有来自首页的筛选参数
-  useEffect(() => {
+  // 每次页面显示时重新检查筛选参数（用于从首页跳转回来时）
+  useDidShow(() => {
     const filterFromHome = Taro.getStorageSync('categoryFilter')
+    console.log('useDidShow检查筛选参数:', filterFromHome, '已加载分类数:', categories.length)
+    
     if (filterFromHome && categories.length > 0) {
-      // 清除存储的筛选参数
       Taro.removeStorageSync('categoryFilter')
       
-      // 根据首页传来的筛选类型找到对应的分类ID
       const categoryMap: Record<string, string> = {
         'polo': 'POLO',
         'tshirt': 'T恤',
@@ -68,7 +68,7 @@ const CategoryPage: FC = () => {
         }
       }
     }
-  }, [categories])
+  })
 
   // 筛选变化时重新获取产品
   useEffect(() => {
@@ -82,11 +82,38 @@ const CategoryPage: FC = () => {
       })
       console.log('筛选数据响应:', res.data)
       const data = res.data.data || res.data
-      setCategories(data.categories || [])
+      const loadedCategories = data.categories || []
+      setCategories(loadedCategories)
       setFabrics(data.fabrics || [])
       setCrafts(data.crafts || [])
       setFits(data.fits || [])
       setStyles(data.styles || [])
+      
+      // 检查是否有来自首页的筛选参数
+      const filterFromHome = Taro.getStorageSync('categoryFilter')
+      console.log('数据加载后检查筛选参数:', filterFromHome)
+      
+      if (filterFromHome) {
+        Taro.removeStorageSync('categoryFilter')
+        
+        const categoryMap: Record<string, string> = {
+          'polo': 'POLO',
+          'tshirt': 'T恤',
+          'hoodie': '卫衣',
+        }
+        
+        const targetName = categoryMap[filterFromHome]
+        console.log('目标分类名称:', targetName, '分类列表:', loadedCategories)
+        
+        if (targetName) {
+          const targetCategory = loadedCategories.find((c: Category) => c.name.includes(targetName))
+          console.log('匹配到的分类:', targetCategory)
+          
+          if (targetCategory) {
+            setSelectedCategoryId(targetCategory.id)
+          }
+        }
+      }
     } catch (error) {
       console.error('获取筛选数据失败:', error)
     }
