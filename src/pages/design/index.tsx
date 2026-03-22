@@ -6,14 +6,50 @@ import { Button } from '@/components/ui/button'
 import { Network } from '@/network'
 import './index.css'
 
-// 颜色选项与对应图片URL
+// 颜色选项与对应图片URL（正面和背面分开）
 const colorOptions = [
-  { id: 'white', name: '白色', border: true, imageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E7%99%BD%E8%89%B2.png&nonce=e73e67e0-c785-4a5f-a12e-040dfd695bec&project_id=7619676618268688390&sign=54f5b64fb864969649ce73ba794b59f66cf2cd527e74d97a178dae33a135bf70' },
-  { id: 'black', name: '黑色', border: false, imageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E9%BB%91%E8%89%B2.png&nonce=c3f320ce-5d11-470f-9b00-3aa13d9a181b&project_id=7619676618268688390&sign=a25edf28c3823ec955f89db5a4e2cc614834eead4339a6d3f1fd4e0f0e82812c' },
-  { id: 'navy', name: '藏青', border: false, imageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E8%97%8F%E9%9D%92.png&nonce=d42e481b-8693-40f4-b2d1-2c459d7d4d76&project_id=7619676618268688390&sign=875b041170a9587aa28c67c98972678ab642c4caeb422588ca6f7a262a6c94ea' },
-  { id: 'dark-gray', name: '深灰', border: false, imageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E6%B7%B1%E7%81%B0.png&nonce=d8e6af31-df8b-428e-bc66-aa8b009fe340&project_id=7619676618268688390&sign=0adeef9dc0670388bfed36276e2f0d2f49dca206ddd46747250a4d47cca1381d' },
-  { id: 'light-gray', name: '浅灰', border: true, imageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E6%B5%85%E7%81%B0.png&nonce=ac75668c-2c65-4435-a651-190e07a8d0ef&project_id=7619676618268688390&sign=9bdeab44313cd995ff5a390748855177ca6ef0a5acbc8e905c4c1b82ea63d094' },
-  { id: 'blue', name: '蓝色', border: false, imageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E8%93%9D%E8%89%B2.png&nonce=74c234d6-ecf9-47ad-b081-fba5a6ff44f8&project_id=7619676618268688390&sign=82d334e3a22adf4e4e3c769629ba58c4c3d67b4be88634689d4c3a60cac3c448' },
+  { 
+    id: 'white', 
+    name: '白色', 
+    border: true, 
+    frontImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E7%99%BD%E8%89%B2.png&nonce=1f211ef0-9052-4c86-8c93-82d8a9806eeb&project_id=7619676618268688390&sign=1855166ff6394439099da866bfd0ad5e0e60251941f5ef21726fd84a94038e42',
+    backImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E7%99%BD%E8%89%B2.png&nonce=e73e67e0-c785-4a5f-a12e-040dfd695bec&project_id=7619676618268688390&sign=54f5b64fb864969649ce73ba794b59f66cf2cd527e74d97a178dae33a135bf70'
+  },
+  { 
+    id: 'black', 
+    name: '黑色', 
+    border: false, 
+    frontImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E9%BB%91%E8%89%B2.png&nonce=87e45b3f-1a2d-4759-a397-7c7eea75ccf1&project_id=7619676618268688390&sign=cad1aeb36f2dd6090ec6cc89ac2bd0a9ced7df20f007f543d1a2a313f1b903ff',
+    backImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E9%BB%91%E8%89%B2.png&nonce=c3f320ce-5d11-470f-9b00-3aa13d9a181b&project_id=7619676618268688390&sign=a25edf28c3823ec955f89db5a4e2cc614834eead4339a6d3f1fd4e0f0e82812c'
+  },
+  { 
+    id: 'navy', 
+    name: '藏青', 
+    border: false, 
+    frontImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E8%97%8F%E9%9D%92.png&nonce=bd8dadef-8088-4446-a42c-39b42d30b617&project_id=7619676618268688390&sign=3179cdbf3d9b325bdf04299be6f6d01804c6386db86f632dab32e5d19e67cba1',
+    backImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E8%97%8F%E9%9D%92.png&nonce=d42e481b-8693-40f4-b2d1-2c459d7d4d76&project_id=7619676618268688390&sign=875b041170a9587aa28c67c98972678ab642c4caeb422588ca6f7a262a6c94ea'
+  },
+  { 
+    id: 'dark-gray', 
+    name: '深灰', 
+    border: false, 
+    frontImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E6%B7%B1%E7%81%B0.png&nonce=e56d6176-3cfa-45a9-bd5e-0361628186e9&project_id=7619676618268688390&sign=7574b9af31c8d6268c85fc4217ff82729f0f252dcc58c49947f1f5c660daab24',
+    backImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E6%B7%B1%E7%81%B0.png&nonce=d8e6af31-df8b-428e-bc66-aa8b009fe340&project_id=7619676618268688390&sign=0adeef9dc0670388bfed36276e2f0d2f49dca206ddd46747250a4d47cca1381d'
+  },
+  { 
+    id: 'light-gray', 
+    name: '浅灰', 
+    border: true, 
+    frontImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E6%B5%85%E7%81%B0.png&nonce=fd758a16-5e6e-4e21-9fc0-d27b808698cf&project_id=7619676618268688390&sign=c04bff6d927c85b4c00ef88f8a21417057773ed8c1c8c374b3668d24d4ea7ca0',
+    backImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E6%B5%85%E7%81%B0.png&nonce=ac75668c-2c65-4435-a651-190e07a8d0ef&project_id=7619676618268688390&sign=9bdeab44313cd995ff5a390748855177ca6ef0a5acbc8e905c4c1b82ea63d094'
+  },
+  { 
+    id: 'blue', 
+    name: '蓝色', 
+    border: false, 
+    frontImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E8%93%9D%E8%89%B2.png&nonce=5df74f7b-4ef1-460e-9590-c490275b91ea&project_id=7619676618268688390&sign=580bef6e3d5fef48e7f9a18a1238ff150b1a21d8203aeda0b92032718b18993c',
+    backImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E8%93%9D%E8%89%B2.png&nonce=74c234d6-ecf9-47ad-b081-fba5a6ff44f8&project_id=7619676618268688390&sign=82d334e3a22adf4e4e3c769629ba58c4c3d67b4be88634689d4c3a60cac3c448'
+  },
 ]
 
 // Logo位置选项（只保留正面和背面）
@@ -35,6 +71,11 @@ const DesignPage: FC = () => {
 
   // 获取当前颜色信息
   const currentColor = colorOptions.find((c) => c.id === selectedColor)
+  
+  // 根据位置获取对应图片URL
+  const currentImageUrl = selectedPosition === 'front' 
+    ? (currentColor?.frontImageUrl || colorOptions[0].frontImageUrl)
+    : (currentColor?.backImageUrl || colorOptions[0].backImageUrl)
 
   // 上传图片（正面/背面）
   const handleUploadImage = async () => {
@@ -171,9 +212,9 @@ const DesignPage: FC = () => {
             style={{ backgroundColor: '#f5f5f5' }}
           >
             <View className="relative w-full px-8">
-              {/* T恤图片 - 根据选中颜色显示对应图片 */}
+              {/* T恤图片 - 根据选中颜色和位置显示对应图片 */}
               <Image 
-                src={currentColor?.imageUrl || colorOptions[0].imageUrl}
+                src={currentImageUrl}
                 mode="widthFix"
                 className="w-full"
               />
