@@ -6,9 +6,6 @@ import { Button } from '@/components/ui/button'
 import { Network } from '@/network'
 import './index.css'
 
-// 袖子颜色图片（左袖和右袖统一使用这张图）
-const SLEEVE_IMAGE_URL = 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2Fimage.png&nonce=b34f00f2-d677-492c-ac96-6edb755e65aa&project_id=7619676618268688390&sign=242ab84427244813ae27f30e5e5aa3f68c81f4e5bc6208c04467b0c1f8196cac'
-
 // 颜色选项与对应图片URL
 const colorOptions = [
   { id: 'white', name: '白色', border: true, imageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E7%99%BD%E8%89%B2.png&nonce=9617b1c1-7651-4843-b824-89cb0e5bf652&project_id=7619676618268688390&sign=0adac256c30015bf2724b814a885d6a06986f3ebdc0e05fc7e7f9a565ca6143c' },
@@ -19,32 +16,27 @@ const colorOptions = [
   { id: 'blue', name: '蓝色', border: false, imageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E8%93%9D%E8%89%B2.png&nonce=2ef15266-7f3d-4dbf-8036-35e8587f04ba&project_id=7619676618268688390&sign=d8264b3d2e2e87ee109c693ae0d8bb4910b8040416cc53a9bffdd22cd4b02be1' },
 ]
 
-// Logo位置选项
+// Logo位置选项（只保留正面和背面）
 const logoPositions = [
-  { id: 'left-sleeve', name: '左袖', type: 'sleeve' },
-  { id: 'right-sleeve', name: '右袖', type: 'sleeve' },
-  { id: 'front', name: '正面', type: 'body' },
-  { id: 'back', name: '背面', type: 'body' },
+  { id: 'front', name: '正面' },
+  { id: 'back', name: '背面' },
 ]
 
 const DesignPage: FC = () => {
   const [selectedColor, setSelectedColor] = useState('white')
   const [selectedPosition, setSelectedPosition] = useState('front')
   const [uploadedLogos, setUploadedLogos] = useState<Record<string, { url: string; x: number; y: number; scale: number }>>({
-    'left-sleeve': { url: '', x: 0, y: 0, scale: 1 },
-    'right-sleeve': { url: '', x: 0, y: 0, scale: 1 },
     'front': { url: '', x: 0, y: 0, scale: 1 },
     'back': { url: '', x: 0, y: 0, scale: 1 },
+    'sleeve': { url: '', x: 0, y: 0, scale: 1 }, // 袖子Logo（选填）
   })
   const [isUploading, setIsUploading] = useState(false)
+  const [isUploadingSleeve, setIsUploadingSleeve] = useState(false)
 
   // 获取当前颜色信息
   const currentColor = colorOptions.find((c) => c.id === selectedColor)
-  
-  // 当前选中位置类型
-  const currentPositionType = logoPositions.find((p) => p.id === selectedPosition)?.type || 'body'
 
-  // 上传图片
+  // 上传图片（正面/背面）
   const handleUploadImage = async () => {
     try {
       const res = await Taro.chooseImage({
@@ -85,11 +77,61 @@ const DesignPage: FC = () => {
     }
   }
 
+  // 上传袖子Logo
+  const handleUploadSleeveLogo = async () => {
+    try {
+      const res = await Taro.chooseImage({
+        count: 1,
+        sizeType: ['compressed'],
+        sourceType: ['album', 'camera'],
+      })
+
+      const tempFilePath = res.tempFilePaths[0]
+      setIsUploadingSleeve(true)
+
+      try {
+        await Network.uploadFile({
+          url: '/api/design/upload',
+          filePath: tempFilePath,
+          name: 'file',
+        })
+      } catch (uploadError) {
+        console.log('服务器上传失败，使用本地路径')
+      }
+
+      setUploadedLogos((prev) => ({
+        ...prev,
+        'sleeve': {
+          url: tempFilePath,
+          x: 0,
+          y: 0,
+          scale: 1,
+        },
+      }))
+
+      Taro.showToast({ title: '上传成功', icon: 'success' })
+    } catch (error) {
+      console.error('上传失败:', error)
+      Taro.showToast({ title: '上传失败', icon: 'none' })
+    } finally {
+      setIsUploadingSleeve(false)
+    }
+  }
+
   // 删除当前位置的logo
   const handleDeleteLogo = () => {
     setUploadedLogos((prev) => ({
       ...prev,
       [selectedPosition]: { url: '', x: 0, y: 0, scale: 1 },
+    }))
+    Taro.showToast({ title: '已删除', icon: 'success' })
+  }
+
+  // 删除袖子Logo
+  const handleDeleteSleeveLogo = () => {
+    setUploadedLogos((prev) => ({
+      ...prev,
+      'sleeve': { url: '', x: 0, y: 0, scale: 1 },
     }))
     Taro.showToast({ title: '已删除', icon: 'success' })
   }
@@ -123,33 +165,27 @@ const DesignPage: FC = () => {
 
       <ScrollView scrollY className="flex-1">
         {/* T恤预览区域 */}
-        <View className="mx-4 mt-4 bg-white rounded-2xl shadow-sm">
+        <View className="mx-4 mt-4 bg-white rounded-2xl shadow-sm overflow-hidden">
           <View 
-            className={`w-full flex items-center justify-center ${currentPositionType === 'sleeve' ? 'py-4' : 'py-6'}`}
-            style={{ backgroundColor: '#f5f5f5', borderRadius: '16px', minHeight: currentPositionType === 'sleeve' ? '400px' : 'auto' }}
+            className="w-full flex items-center justify-center py-6"
+            style={{ backgroundColor: '#f5f5f5' }}
           >
-            <View className={`relative w-full ${currentPositionType === 'sleeve' ? 'px-4' : 'px-8'}`}>
-              {/* 图片 - 根据位置类型显示不同图片 */}
+            <View className="relative w-full px-8">
+              {/* T恤图片 - 根据选中颜色显示对应图片 */}
               <Image 
-                src={currentPositionType === 'sleeve' ? SLEEVE_IMAGE_URL : (currentColor?.imageUrl || colorOptions[0].imageUrl)}
-                mode={currentPositionType === 'sleeve' ? 'aspectFit' : 'widthFix'}
+                src={currentColor?.imageUrl || colorOptions[0].imageUrl}
+                mode="widthFix"
                 className="w-full"
-                style={{ display: 'block', width: currentPositionType === 'sleeve' ? '60%' : '100%', margin: currentPositionType === 'sleeve' ? '0 auto' : '0' }}
               />
               
               {/* 设计区域（Logo放置区域） */}
               <View 
                 className="absolute border-2 border-dashed border-blue-500 rounded"
-                style={currentPositionType === 'body' ? {
+                style={{
                   top: '28%',
                   left: '26%',
                   width: '48%',
                   height: '35%',
-                } : {
-                  top: '12%',
-                  left: selectedPosition === 'left-sleeve' ? '5%' : '75%',
-                  width: '20%',
-                  height: '25%',
                 }}
               >
                 <MovableArea 
@@ -177,9 +213,7 @@ const DesignPage: FC = () => {
                 
                 {!uploadedLogos[selectedPosition]?.url && (
                   <View className="absolute inset-0 flex items-center justify-center">
-                    <Text className="block text-xs text-blue-400">
-                      {currentPositionType === 'body' ? '20x25cm' : '10x10cm'}
-                    </Text>
+                    <Text className="block text-xs text-blue-400">20x25cm</Text>
                   </View>
                 )}
               </View>
@@ -189,7 +223,7 @@ const DesignPage: FC = () => {
           {/* 设计区域提示 */}
           <View className="px-4 py-2 bg-gray-50 border-t border-gray-100">
             <Text className="block text-xs text-gray-500">
-              设计区域：{currentPositionType === 'body' ? '正面/背面 20x25cm' : '袖口 10x10cm'}
+              设计区域：{selectedPosition === 'front' ? '正面' : '背面'} 20x25cm
             </Text>
           </View>
         </View>
@@ -197,11 +231,11 @@ const DesignPage: FC = () => {
         {/* Logo位置选择 */}
         <View className="mx-4 mt-4 p-4 bg-white rounded-xl">
           <Text className="block text-sm font-semibold text-gray-900 mb-3">选择Logo位置</Text>
-          <View className="grid grid-cols-4 gap-2">
+          <View className="flex flex-row gap-2">
             {logoPositions.map((position) => (
               <View
                 key={position.id}
-                className={`p-3 rounded-xl text-center ${
+                className={`flex-1 p-3 rounded-xl text-center ${
                   selectedPosition === position.id
                     ? 'bg-blue-600 text-white'
                     : 'bg-gray-50 text-gray-700'
@@ -223,61 +257,39 @@ const DesignPage: FC = () => {
           </View>
         </View>
 
-        {/* 颜色选择 - 袖子位置显示袖子样式，身体位置显示颜色选项 */}
+        {/* 颜色选择 */}
         <View className="mx-4 mt-4 p-4 bg-white rounded-xl">
-          {currentPositionType === 'sleeve' ? (
-            <>
-              <Text className="block text-sm font-semibold text-gray-900 mb-3">袖子样式</Text>
-              <View className="flex justify-center">
-                <View 
-                  className={`w-32 h-32 rounded-xl border-2 overflow-hidden ${
-                    'border-blue-600 ring-2 ring-blue-600 ring-offset-2'
+          <Text className="block text-sm font-semibold text-gray-900 mb-3">更换颜色</Text>
+          <View className="flex flex-wrap gap-4 justify-center">
+            {colorOptions.map((option) => (
+              <View
+                key={option.id}
+                className="flex flex-col items-center"
+                onClick={() => setSelectedColor(option.id)}
+              >
+                <View
+                  className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                    selectedColor === option.id ? 'ring-2 ring-blue-600 ring-offset-2' : ''
                   }`}
-                >
-                  <Image 
-                    src={SLEEVE_IMAGE_URL}
-                    mode="aspectFit"
-                    className="w-full h-full"
-                  />
-                </View>
+                  style={{ 
+                    backgroundColor: option.id === 'white' ? '#ffffff' : 
+                                    option.id === 'black' ? '#1a1a1a' :
+                                    option.id === 'navy' ? '#1e3a5f' :
+                                    option.id === 'dark-gray' ? '#4a4a4a' :
+                                    option.id === 'light-gray' ? '#c0c0c0' : '#2563eb',
+                    border: option.border ? '1px solid #e5e7eb' : 'none'
+                  }}
+                />
+                <Text className="block text-xs text-gray-600 mt-2">{option.name}</Text>
               </View>
-              <Text className="block text-xs text-gray-500 text-center mt-2">统一袖子样式</Text>
-            </>
-          ) : (
-            <>
-              <Text className="block text-sm font-semibold text-gray-900 mb-3">更换颜色</Text>
-              <View className="flex flex-wrap gap-4 justify-center">
-                {colorOptions.map((option) => (
-                  <View
-                    key={option.id}
-                    className="flex flex-col items-center"
-                    onClick={() => setSelectedColor(option.id)}
-                  >
-                    <View
-                      className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                        selectedColor === option.id ? 'ring-2 ring-blue-600 ring-offset-2' : ''
-                      }`}
-                      style={{ 
-                        backgroundColor: option.id === 'white' ? '#ffffff' : 
-                                        option.id === 'black' ? '#1a1a1a' :
-                                        option.id === 'navy' ? '#1e3a5f' :
-                                        option.id === 'dark-gray' ? '#4a4a4a' :
-                                        option.id === 'light-gray' ? '#c0c0c0' : '#2563eb',
-                        border: option.border ? '1px solid #e5e7eb' : 'none'
-                      }}
-                    />
-                    <Text className="block text-xs text-gray-600 mt-2">{option.name}</Text>
-                  </View>
-                ))}
-              </View>
-            </>
-          )}
+            ))}
+          </View>
         </View>
 
-        {/* 上传Logo */}
+        {/* 上传Logo（正面/背面） */}
         <View className="mx-4 mt-4 p-4 bg-white rounded-xl">
           <Text className="block text-sm font-semibold text-gray-900 mb-3">
-            上传Logo - {logoPositions.find((p) => p.id === selectedPosition)?.name}
+            上传Logo - {selectedPosition === 'front' ? '正面' : '背面'}
           </Text>
           
           {uploadedLogos[selectedPosition]?.url ? (
@@ -320,16 +332,62 @@ const DesignPage: FC = () => {
           )}
         </View>
 
+        {/* 上传Logo - 袖子（选填） */}
+        <View className="mx-4 mt-4 p-4 bg-white rounded-xl">
+          <View className="flex items-center mb-3">
+            <Text className="block text-sm font-semibold text-gray-900">上传Logo - 袖子</Text>
+            <Text className="block text-xs text-gray-400 ml-2">（选填）</Text>
+          </View>
+          
+          {uploadedLogos['sleeve']?.url ? (
+            <View className="flex flex-col items-center">
+              <Image 
+                src={uploadedLogos['sleeve'].url} 
+                mode="aspectFit" 
+                className="w-24 h-24 rounded-lg border border-gray-200"
+              />
+              <Text className="block text-xs text-gray-500 mt-2">设计区域：10x10cm</Text>
+              <View className="flex gap-2 mt-3">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  onClick={handleDeleteSleeveLogo}
+                >
+                  删除
+                </Button>
+                <Button 
+                  size="sm" 
+                  onClick={handleUploadSleeveLogo}
+                  disabled={isUploadingSleeve}
+                >
+                  {isUploadingSleeve ? '上传中...' : '更换'}
+                </Button>
+              </View>
+            </View>
+          ) : (
+            <View
+              className="w-full h-24 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center bg-gray-50"
+              onClick={handleUploadSleeveLogo}
+            >
+              <Text className="block text-3xl text-gray-300 mb-1">+</Text>
+              <Text className="block text-xs text-gray-400">
+                {isUploadingSleeve ? '上传中...' : '可选：上传袖子Logo'}
+              </Text>
+            </View>
+          )}
+        </View>
+
         {/* 使用说明 */}
         <View className="mx-4 mt-4 mb-6 p-4 bg-blue-50 rounded-xl">
           <Text className="block text-sm font-medium text-blue-800 mb-2">使用说明</Text>
           <Text className="block text-xs text-blue-600">
             1. 选择T恤颜色{'\n'}
-            2. 选择Logo位置（左袖/右袖/正面/背面）{'\n'}
+            2. 选择Logo位置（正面/背面）{'\n'}
             3. 上传您的Logo图片{'\n'}
             4. 拖动调整Logo位置{'\n'}
             5. 双指缩放调整Logo大小{'\n'}
-            6. 点击保存完成设计
+            6. 可选：上传袖子Logo{'\n'}
+            7. 点击保存完成设计
           </Text>
         </View>
       </ScrollView>
