@@ -12,43 +12,43 @@ const colorOptions = [
     id: 'white', 
     name: '白色', 
     border: true, 
-    frontImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E7%99%BD%E8%89%B2.png&nonce=1f211ef0-9052-4c86-8c93-82d8a9806eeb&project_id=7619676618268688390&sign=1855166ff6394439099da866bfd0ad5e0e60251941f5ef21726fd84a94038e42',
-    backImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E7%99%BD%E8%89%B2.png&nonce=e73e67e0-c785-4a5f-a12e-040dfd695bec&project_id=7619676618268688390&sign=54f5b64fb864969649ce73ba794b59f66cf2cd527e74d97a178dae33a135bf70'
+    frontImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E7%99%BD%E8%89%B2%E6%AD%A3%E9%9D%A2.png&nonce=0255cb34-9343-4fc5-b2ba-204410486f51&project_id=7619676618268688390&sign=8045b57237364629c06adeeb20677f6eb9e9eece1e0547fe446db20673bf7310',
+    backImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E7%99%BD%E8%89%B2%E8%83%8C%E9%9D%A2.png&nonce=d1172342-7cb8-4c9b-a428-a2f460cfbaef&project_id=7619676618268688390&sign=581ca23c4ce4da79aec5762e28ac751c2749eb3f560bc18a0ff067dcf0826bfa'
   },
   { 
     id: 'black', 
     name: '黑色', 
     border: false, 
-    frontImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E9%BB%91%E8%89%B2.png&nonce=87e45b3f-1a2d-4759-a397-7c7eea75ccf1&project_id=7619676618268688390&sign=cad1aeb36f2dd6090ec6cc89ac2bd0a9ced7df20f007f543d1a2a313f1b903ff',
-    backImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E9%BB%91%E8%89%B2.png&nonce=c3f320ce-5d11-470f-9b00-3aa13d9a181b&project_id=7619676618268688390&sign=a25edf28c3823ec955f89db5a4e2cc614834eead4339a6d3f1fd4e0f0e82812c'
+    frontImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E9%BB%91%E8%89%B2%E6%AD%A3%E9%9D%A2.png&nonce=378c25e4-48fb-4cca-9de4-ad92335cacca&project_id=7619676618268688390&sign=96b6464518f1f57cee96278bf6499348465b77398ebd089357c7ffad7d0cfeb4',
+    backImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E9%BB%91%E8%89%B2%E8%83%8C%E9%9D%A2.png&nonce=531dee14-1801-4c90-8912-088b97b9fd3d&project_id=7619676618268688390&sign=82caf8d2ec3f28bbac51bdc1088040cfc28221e60ab70e08a03e219a6da0df1a'
   },
   { 
     id: 'navy', 
     name: '藏青', 
     border: false, 
-    frontImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E8%97%8F%E9%9D%92.png&nonce=bd8dadef-8088-4446-a42c-39b42d30b617&project_id=7619676618268688390&sign=3179cdbf3d9b325bdf04299be6f6d01804c6386db86f632dab32e5d19e67cba1',
-    backImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E8%97%8F%E9%9D%92.png&nonce=d42e481b-8693-40f4-b2d1-2c459d7d4d76&project_id=7619676618268688390&sign=875b041170a9587aa28c67c98972678ab642c4caeb422588ca6f7a262a6c94ea'
+    frontImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E8%97%8F%E9%9D%92%E6%AD%A3%E9%9D%A2.png&nonce=7fb0ac23-5062-46e1-9121-f1b0834142e4&project_id=7619676618268688390&sign=1b59f849e2c5adc6228757e8ce819619e94561de88805f7092ef19b9c64451eb',
+    backImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E8%97%8F%E9%9D%92%E8%83%8C%E9%9D%A2.png&nonce=582f0d40-e212-4a8b-a1c3-8c019ead3904&project_id=7619676618268688390&sign=e775474b4a9d849857b37030e8ff647d0df902c78f1db35deace035307ec23a2'
   },
   { 
     id: 'dark-gray', 
     name: '深灰', 
     border: false, 
-    frontImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E6%B7%B1%E7%81%B0.png&nonce=e56d6176-3cfa-45a9-bd5e-0361628186e9&project_id=7619676618268688390&sign=7574b9af31c8d6268c85fc4217ff82729f0f252dcc58c49947f1f5c660daab24',
-    backImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E6%B7%B1%E7%81%B0.png&nonce=d8e6af31-df8b-428e-bc66-aa8b009fe340&project_id=7619676618268688390&sign=0adeef9dc0670388bfed36276e2f0d2f49dca206ddd46747250a4d47cca1381d'
+    frontImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E6%B7%B1%E7%81%B0%E6%AD%A3%E9%9D%A2.png&nonce=0eaa0c4e-ac66-455f-b7bd-2b9a880ef88f&project_id=7619676618268688390&sign=320df5ba9c85dc78368215c525ae1be70d7373f51f279e4124151dcc8d3ed732',
+    backImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E6%B7%B1%E7%81%B0%E8%83%8C%E9%9D%A2.png&nonce=49f73f94-b108-4b9a-b418-b4572d86c249&project_id=7619676618268688390&sign=da4bca74f752a936895805ad4223d23d6f9ff38c67e1c67d3c926fa4a66cb8b3'
   },
   { 
     id: 'light-gray', 
     name: '浅灰', 
     border: true, 
-    frontImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E6%B5%85%E7%81%B0.png&nonce=fd758a16-5e6e-4e21-9fc0-d27b808698cf&project_id=7619676618268688390&sign=c04bff6d927c85b4c00ef88f8a21417057773ed8c1c8c374b3668d24d4ea7ca0',
-    backImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E6%B5%85%E7%81%B0.png&nonce=ac75668c-2c65-4435-a651-190e07a8d0ef&project_id=7619676618268688390&sign=9bdeab44313cd995ff5a390748855177ca6ef0a5acbc8e905c4c1b82ea63d094'
+    frontImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E6%B5%85%E7%81%B0%E6%AD%A3%E9%9D%A2.png&nonce=6d28ea36-76e5-4e7a-a758-a5209817310e&project_id=7619676618268688390&sign=0674ec3b63e13adcb1e9a42e56bd43ef72e37d45610e5a5268302b5891b5eeae',
+    backImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E6%B5%85%E7%81%B0%E8%83%8C%E9%9D%A2.png&nonce=cda64e5f-6d87-4856-a6d6-02b8276b5121&project_id=7619676618268688390&sign=93091d597a439f1b2aa9d4645964e930a1d0fb8c168b65a63df2aec3a9cd243a'
   },
   { 
     id: 'blue', 
     name: '蓝色', 
     border: false, 
-    frontImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E8%93%9D%E8%89%B2.png&nonce=5df74f7b-4ef1-460e-9590-c490275b91ea&project_id=7619676618268688390&sign=580bef6e3d5fef48e7f9a18a1238ff150b1a21d8203aeda0b92032718b18993c',
-    backImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E8%93%9D%E8%89%B2.png&nonce=74c234d6-ecf9-47ad-b081-fba5a6ff44f8&project_id=7619676618268688390&sign=82d334e3a22adf4e4e3c769629ba58c4c3d67b4be88634689d4c3a60cac3c448'
+    frontImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E8%93%9D%E8%89%B2%E6%AD%A3%E9%9D%A2.png&nonce=e65c61ca-475a-424b-9eed-6a85f22fb2a0&project_id=7619676618268688390&sign=5953b75a261783261141899b6d20abc10e07827dce4e2b7a0eab9fd28316e168',
+    backImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E8%93%9D%E8%89%B2%E8%83%8C%E9%9D%A2.png&nonce=02cfd257-06ae-4203-b6ca-c5954e692dc9&project_id=7619676618268688390&sign=65352d3dfea77e3683432bad5f5fa42b64bad53981c7058050b987b128d17776'
   },
 ]
 
