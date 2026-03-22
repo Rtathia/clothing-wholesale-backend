@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Swiper, SwiperItem, Input } from '@tarojs/components'
+import { View, Text, ScrollView, Swiper, SwiperItem, Input, Image } from '@tarojs/components'
 import { useState } from 'react'
 import Taro from '@tarojs/taro'
 import type { FC } from 'react'
@@ -12,11 +12,16 @@ const navItems = [
   { id: 'hoodie', name: '卫衣系列', icon: '🎽', color: 'bg-pink-50' },
 ]
 
-// Banner数据
+// Banner数据（使用图片）
 const bannerItems = [
-  { id: 1, title: '全无痕压胶', subtitle: '品质之选', bgColor: 'bg-gradient-to-r from-blue-500 to-blue-600' },
-  { id: 2, title: '新品上市', subtitle: '限时优惠', bgColor: 'bg-gradient-to-r from-orange-500 to-red-500' },
-  { id: 3, title: '定制服务', subtitle: '专属设计', bgColor: 'bg-gradient-to-r from-purple-500 to-pink-500' },
+  { 
+    id: 1, 
+    imageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2Fimage.png&nonce=634ac570-061e-4c97-9912-6c6861293725&project_id=7619676618268688390&sign=ee19bf6cbe8a0c71cab737e5b092f9a541a79bdbafe4ab818704cc5e8ba6db35' 
+  },
+  { 
+    id: 2, 
+    imageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F333.png&nonce=5e8d632b-517e-4a7e-8916-dd59013b85e3&project_id=7619676618268688390&sign=556257f9b31d2e51e9452445cfce3d8e051f2badc345f23138e9af542c0a544e' 
+  },
 ]
 
 const HomePage: FC = () => {
@@ -89,13 +94,11 @@ const HomePage: FC = () => {
           >
             {bannerItems.map((banner) => (
               <SwiperItem key={banner.id}>
-                <View className={`w-full h-full ${banner.bgColor} flex items-center justify-between px-6`}>
-                  <View>
-                    <Text className="block text-2xl font-bold text-white">{banner.title}</Text>
-                    <Text className="block text-sm text-white/80 mt-1">{banner.subtitle}</Text>
-                  </View>
-                  <Text className="block text-6xl opacity-30">👕</Text>
-                </View>
+                <Image 
+                  src={banner.imageUrl}
+                  mode="aspectFill"
+                  className="w-full h-full"
+                />
               </SwiperItem>
             ))}
           </Swiper>
