@@ -74,6 +74,9 @@ const initialForm: ProductForm = {
 }
 
 const AdminPage: FC = () => {
+  // 搜索状态
+  const [searchKeyword, setSearchKeyword] = useState('')
+  
   // 页面状态
   const [activeTab, setActiveTab] = useState<'products' | 'categories'>('products')
   
@@ -379,6 +382,25 @@ const AdminPage: FC = () => {
         {/* 产品管理 */}
         {activeTab === 'products' && !showProductForm && (
           <View className="p-4">
+            {/* 搜索框 */}
+            <View className="bg-white rounded-xl px-4 py-3 mb-3 flex flex-row items-center shadow-sm">
+              <Text className="text-gray-400 mr-2">🔍</Text>
+              <Input
+                className="flex-1 bg-transparent text-sm"
+                placeholder="搜索产品名称..."
+                value={searchKeyword}
+                onInput={(e) => setSearchKeyword(e.detail.value)}
+              />
+              {searchKeyword && (
+                <Text
+                  className="text-gray-400 text-sm"
+                  onClick={() => setSearchKeyword('')}
+                >
+                  ✕
+                </Text>
+              )}
+            </View>
+            
             {/* 新建按钮 */}
             <View
               className="bg-blue-600 rounded-xl py-3 mb-4 flex items-center justify-center"
@@ -388,7 +410,9 @@ const AdminPage: FC = () => {
             </View>
 
             {/* 产品列表 */}
-            {products.map((product) => (
+            {products
+              .filter(p => p.name.toLowerCase().includes(searchKeyword.toLowerCase()))
+              .map((product) => (
               <View key={product.id} className="bg-white rounded-xl p-4 mb-3 shadow-sm">
                 <View className="flex flex-row">
                   {/* 产品图片 */}
@@ -446,10 +470,12 @@ const AdminPage: FC = () => {
             ))}
 
             {/* 空状态 */}
-            {products.length === 0 && (
+            {products.filter(p => p.name.toLowerCase().includes(searchKeyword.toLowerCase())).length === 0 && (
               <View className="flex flex-col items-center justify-center py-20">
                 <Text className="text-4xl text-gray-300 mb-4">📦</Text>
-                <Text className="text-gray-400">暂无产品，点击上方按钮创建</Text>
+                <Text className="text-gray-400">
+                  {searchKeyword ? '未找到相关产品' : '暂无产品，点击上方按钮创建'}
+                </Text>
               </View>
             )}
           </View>

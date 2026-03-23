@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Image } from '@tarojs/components'
+import { View, Text, ScrollView, Image, Input } from '@tarojs/components'
 import { useState, useEffect } from 'react'
 import Taro, { useDidShow } from '@tarojs/taro'
 import type { FC } from 'react'
@@ -27,6 +27,9 @@ interface Category {
 }
 
 const CategoryPage: FC = () => {
+  // 搜索状态
+  const [searchKeyword, setSearchKeyword] = useState('')
+  
   // 筛选状态
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null)
   const [selectedFabricId, setSelectedFabricId] = useState<number | null>(null)
@@ -167,6 +170,27 @@ const CategoryPage: FC = () => {
 
   return (
     <View className="flex flex-col bg-gray-50" style={{ height: 'calc(100vh - 50px)' }}>
+      {/* 顶部搜索框 */}
+      <View className="bg-white px-3 py-2 border-b border-gray-200">
+        <View className="bg-gray-100 rounded-full px-4 py-2 flex flex-row items-center">
+          <Text className="text-gray-400 mr-2">🔍</Text>
+          <Input
+            className="flex-1 bg-transparent text-sm"
+            placeholder="搜索商品名称..."
+            value={searchKeyword}
+            onInput={(e) => setSearchKeyword(e.detail.value)}
+          />
+          {searchKeyword && (
+            <Text
+              className="text-gray-400 text-sm"
+              onClick={() => setSearchKeyword('')}
+            >
+              ✕
+            </Text>
+          )}
+        </View>
+      </View>
+      
       <View className="flex flex-1 overflow-hidden">
         {/* 左侧筛选区 - 固定不动 */}
         <View className="w-24 bg-white border-r border-gray-200 flex flex-col h-full overflow-y-auto flex-shrink-0">
@@ -273,10 +297,10 @@ const CategoryPage: FC = () => {
         {/* 右侧商品区 */}
         <ScrollView scrollY className="flex-1 p-3">
           {/* 筛选结果提示 */}
-          {(selectedCategoryId || selectedFabricId || selectedCraftId) && (
+          {(selectedCategoryId || selectedFabricId || selectedCraftId || searchKeyword) && (
             <View className="mb-3 px-3 py-2 bg-blue-50 rounded-lg">
               <Text className="block text-sm text-blue-600">
-                已筛选 {products.length} 件商品
+                已筛选 {products.filter(p => p.name.toLowerCase().includes(searchKeyword.toLowerCase())).length} 件商品
               </Text>
             </View>
           )}
@@ -291,7 +315,9 @@ const CategoryPage: FC = () => {
           {/* 商品列表 - 单列布局 */}
           {!loading && (
             <View className="flex flex-col gap-3">
-              {products.map((product) => (
+              {products
+                .filter(p => p.name.toLowerCase().includes(searchKeyword.toLowerCase()))
+                .map((product) => (
                 <View
                   key={product.id}
                   className="bg-white rounded-xl overflow-hidden shadow-sm"
@@ -351,10 +377,12 @@ const CategoryPage: FC = () => {
           )}
 
           {/* 空状态 */}
-          {!loading && products.length === 0 && (
+          {!loading && products.filter(p => p.name.toLowerCase().includes(searchKeyword.toLowerCase())).length === 0 && (
             <View className="flex flex-col items-center justify-center py-20">
               <Text className="block text-4xl text-gray-300 mb-4">📦</Text>
-              <Text className="block text-gray-400">暂无符合条件的商品</Text>
+              <Text className="block text-gray-400">
+                {searchKeyword ? '未找到相关商品' : '暂无符合条件的商品'}
+              </Text>
             </View>
           )}
           
