@@ -34,8 +34,6 @@ interface Product {
   fit_id: number | null
   style_id: number | null
   detail_images: string | null
-  videos: string | null
-  photos: string | null
   is_active: boolean
 }
 
@@ -58,8 +56,6 @@ interface ProductForm {
   styleId: number | null
   imageUrl: string
   detailImages: string[]
-  videos: string[]
-  photos: string[]
   sizes: ProductSize[] // 产品尺码
 }
 
@@ -74,8 +70,6 @@ const initialForm: ProductForm = {
   styleId: null,
   imageUrl: '',
   detailImages: [],
-  videos: [],
-  photos: [],
   sizes: [],
 }
 
@@ -144,7 +138,7 @@ const AdminPage: FC = () => {
   }
 
   // 选择图片上传
-  const handleChooseImage = async (type: 'cover' | 'detail' | 'photos') => {
+  const handleChooseImage = async (type: 'cover' | 'detail') => {
     try {
       const res = await Taro.chooseImage({
         count: type === 'cover' ? 1 : 9,
@@ -182,10 +176,8 @@ const AdminPage: FC = () => {
           console.log('获取到URL:', url)
           if (type === 'cover') {
             setProductForm(prev => ({ ...prev, imageUrl: url }))
-          } else if (type === 'detail') {
+          } else {
             setProductForm(prev => ({ ...prev, detailImages: [...prev.detailImages, url] }))
-          } else if (type === 'photos') {
-            setProductForm(prev => ({ ...prev, photos: [...prev.photos, url] }))
           }
         } else {
           console.error('未能获取到URL:', result)
@@ -201,62 +193,12 @@ const AdminPage: FC = () => {
     }
   }
 
-  // 选择视频上传
-  const handleChooseVideo = async () => {
-    try {
-      const res = await Taro.chooseVideo({
-        sourceType: ['album', 'camera'],
-        maxDuration: 60,
-        compressed: true,
-      })
-      
-      setUploading(true)
-      
-      console.log('开始上传视频:', res.tempFilePath)
-      const uploadRes = await Network.uploadFile({
-        url: '/api/admin/upload',
-        filePath: res.tempFilePath,
-        name: 'file',
-      })
-      
-      console.log('上传响应:', uploadRes)
-      
-      // 解析响应数据（可能是字符串或对象）
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let result: any = uploadRes.data
-      if (typeof result === 'string') {
-        try {
-          result = JSON.parse(result)
-        } catch (e) {
-          console.error('解析响应失败:', e)
-        }
-      }
-      
-      console.log('解析后的结果:', result)
-      const url = result?.url || result?.data?.url
-      
-      if (url) {
-        console.log('获取到URL:', url)
-        setProductForm(prev => ({ ...prev, videos: [...prev.videos, url] }))
-        Taro.showToast({ title: '上传成功', icon: 'success' })
-      } else {
-        console.error('未能获取到URL:', result)
-        Taro.showToast({ title: '上传失败', icon: 'none' })
-      }
-    } catch (error) {
-      console.error('上传失败:', error)
-      Taro.showToast({ title: '上传失败', icon: 'none' })
-    } finally {
-      setUploading(false)
-    }
-  }
-
   // 删除图片
-  const handleRemoveImage = (type: 'detail' | 'photos' | 'videos', index: number) => {
+  const handleRemoveImage = (index: number) => {
     setProductForm(prev => {
-      const arr = [...prev[type]]
+      const arr = [...prev.detailImages]
       arr.splice(index, 1)
-      return { ...prev, [type]: arr }
+      return { ...prev, detailImages: arr }
     })
   }
 
@@ -291,8 +233,6 @@ const AdminPage: FC = () => {
       styleId: product.style_id,
       imageUrl: product.image_url || '',
       detailImages: product.detail_images ? JSON.parse(product.detail_images) : [],
-      videos: product.videos ? JSON.parse(product.videos) : [],
-      photos: product.photos ? JSON.parse(product.photos) : [],
       sizes: productSizes,
     })
     setShowProductForm(true)
@@ -328,8 +268,6 @@ const AdminPage: FC = () => {
       fitId: productForm.fitId || undefined,
       styleId: productForm.styleId || undefined,
       detailImages: JSON.stringify(productForm.detailImages),
-      videos: JSON.stringify(productForm.videos),
-      photos: JSON.stringify(productForm.photos),
     }
 
     try {
@@ -839,7 +777,7 @@ const AdminPage: FC = () => {
                       <Image src={img} mode="aspectFill" className="w-full h-full rounded-lg" />
                       <View
                         className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center"
-                        onClick={() => handleRemoveImage('detail', index)}
+                        onClick={() => handleRemoveImage(index)}
                       >
                         <Text className="text-white text-xs">×</Text>
                       </View>
@@ -848,52 +786,6 @@ const AdminPage: FC = () => {
                   <View
                     className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300"
                     onClick={() => handleChooseImage('detail')}
-                  >
-                    <Text className="text-2xl text-gray-400">+</Text>
-                  </View>
-                </View>
-              </View>
-
-              <View className="mb-4">
-                <Text className="block text-sm text-gray-700 mb-2">实拍视频</Text>
-                <View className="flex flex-row flex-wrap gap-2">
-                  {productForm.videos.map((_video, index) => (
-                    <View key={index} className="relative w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
-                      <Text className="text-2xl">📹</Text>
-                      <View
-                        className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center"
-                        onClick={() => handleRemoveImage('videos', index)}
-                      >
-                        <Text className="text-white text-xs">×</Text>
-                      </View>
-                    </View>
-                  ))}
-                  <View
-                    className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300"
-                    onClick={handleChooseVideo}
-                  >
-                    <Text className="text-2xl text-gray-400">+</Text>
-                  </View>
-                </View>
-              </View>
-
-              <View className="mb-4">
-                <Text className="block text-sm text-gray-700 mb-2">实拍图片</Text>
-                <View className="flex flex-row flex-wrap gap-2">
-                  {productForm.photos.map((img, index) => (
-                    <View key={index} className="relative w-20 h-20">
-                      <Image src={img} mode="aspectFill" className="w-full h-full rounded-lg" />
-                      <View
-                        className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center"
-                        onClick={() => handleRemoveImage('photos', index)}
-                      >
-                        <Text className="text-white text-xs">×</Text>
-                      </View>
-                    </View>
-                  ))}
-                  <View
-                    className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300"
-                    onClick={() => handleChooseImage('photos')}
                   >
                     <Text className="text-2xl text-gray-400">+</Text>
                   </View>

@@ -172,15 +172,17 @@ const ProductDetailPage: FC = () => {
           indicatorActiveColor="#f97316"
         >
           <SwiperItem>
-            <View className="w-full h-full flex items-center justify-center bg-white">
+            <View className="w-full h-full bg-white">
               {product.image_url ? (
                 <Image 
                   src={product.image_url}
-                  mode="aspectFit"
+                  mode="aspectFill"
                   className="w-full h-full"
                 />
               ) : (
-                <Text className="text-6xl text-gray-300">👕</Text>
+                <View className="w-full h-full flex items-center justify-center">
+                  <Text className="text-6xl text-gray-300">👕</Text>
+                </View>
               )}
             </View>
           </SwiperItem>
