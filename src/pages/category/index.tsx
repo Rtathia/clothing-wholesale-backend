@@ -300,15 +300,16 @@ const CategoryPage: FC = () => {
                   }}
                 >
                   {/* 商品图片 */}
-                  <View className="w-full h-48 bg-white">
+                  <View className="w-full bg-white">
                     {product.image_url ? (
                       <Image 
                         src={product.image_url}
-                        mode="aspectFill"
-                        className="w-full h-full"
+                        mode="widthFix"
+                        className="w-full"
+                        style={{ height: 'auto' }}
                       />
                     ) : (
-                      <View className="w-full h-full flex items-center justify-center">
+                      <View className="w-full h-48 flex items-center justify-center">
                         <Text className="text-6xl text-gray-300">👕</Text>
                       </View>
                     )}
