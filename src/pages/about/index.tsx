@@ -1,4 +1,4 @@
-import { View, Text, ScrollView } from '@tarojs/components'
+import { View, Text, ScrollView, Image } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import type { FC } from 'react'
 import './index.css'
@@ -35,11 +35,16 @@ const AboutPage: FC = () => {
     <View className="flex flex-col min-h-screen bg-gray-50" style={{ height: 'calc(100vh - 50px)' }}>
       <ScrollView scrollY className="flex-1">
         {/* 顶部Banner */}
-        <View className="relative h-48 bg-gradient-to-br from-blue-600 to-blue-800">
-          <View className="absolute inset-0 flex items-center justify-center">
+        <View className="relative h-48">
+          <Image 
+            src="https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2Fbg.jpg&nonce=28fccf92-3dd1-4e3e-8646-c79062a20d71&project_id=7619676618268688390&sign=ceb88e5f0eb0ac89b9a1f9df73178f099c9bb9afd9c08df6cc720f0b1148b909"
+            mode="aspectFill"
+            className="w-full h-full"
+          />
+          <View className="absolute inset-0 flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}>
             <View className="text-center">
-              <Text className="block text-4xl font-bold text-white">广州柳乐服饰</Text>
-              <Text className="block text-lg text-white text-opacity-80 mt-2">专注服装定制十余年</Text>
+              <Text className="block text-3xl font-bold text-white">广州柳乐服饰</Text>
+              <Text className="block text-base text-white text-opacity-90 mt-2">专注服装定制十余年</Text>
             </View>
           </View>
         </View>
