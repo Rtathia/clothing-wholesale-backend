@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Image, Swiper, SwiperItem, Video } from '@tarojs/components'
+import { View, Text, ScrollView, Image, Swiper, SwiperItem } from '@tarojs/components'
 import { useState, useEffect } from 'react'
 import Taro, { useRouter } from '@tarojs/taro'
 import type { FC } from 'react'
@@ -43,7 +43,6 @@ const ProductDetailPage: FC = () => {
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
   const [selectedSize, setSelectedSize] = useState<string>('')
-  const [activeTab, setActiveTab] = useState<'detail' | 'video' | 'photos'>('detail')
   
   // 分类数据
   const [categories, setCategories] = useState<Category[]>([])
@@ -51,10 +50,8 @@ const ProductDetailPage: FC = () => {
   const [fits, setFits] = useState<Category[]>([])
   const [styles, setStyles] = useState<Category[]>([])
 
-  // 解析后的图片/视频数据
+  // 解析后的图片数据
   const [detailImages, setDetailImages] = useState<string[]>([])
-  const [videos, setVideos] = useState<string[]>([])
-  const [photos, setPhotos] = useState<string[]>([])
 
   // 获取产品详情
   useEffect(() => {
@@ -77,26 +74,12 @@ const ProductDetailPage: FC = () => {
       const data = res.data.data || res.data
       setProduct(data)
       
-      // 解析图片和视频数据
+      // 解析图片数据
       if (data.detail_images) {
         try {
           setDetailImages(JSON.parse(data.detail_images))
         } catch (e) {
           console.error('解析详情图片失败:', e)
-        }
-      }
-      if (data.videos) {
-        try {
-          setVideos(JSON.parse(data.videos))
-        } catch (e) {
-          console.error('解析视频失败:', e)
-        }
-      }
-      if (data.photos) {
-        try {
-          setPhotos(JSON.parse(data.photos))
-        } catch (e) {
-          console.error('解析实拍图失败:', e)
         }
       }
     } catch (error) {
@@ -292,102 +275,28 @@ const ProductDetailPage: FC = () => {
           </View>
         </View>
 
-        {/* 底部标签切换 */}
+        {/* 商品详情 */}
         <View className="bg-white mt-2">
-          <View className="flex flex-row border-b border-gray-200">
-            {[
-              { id: 'detail', name: '商品详情' },
-              { id: 'video', name: '实拍视频' },
-              { id: 'photos', name: '实拍图' },
-            ].map((tab) => (
-              <View
-                key={tab.id}
-                className={`flex-1 py-3 text-center ${
-                  activeTab === tab.id ? 'border-b-2 border-orange-500' : ''
-                }`}
-                onClick={() => setActiveTab(tab.id as 'detail' | 'video' | 'photos')}
-              >
-                <Text className={`text-sm ${
-                  activeTab === tab.id ? 'text-orange-500 font-bold' : 'text-gray-600'
-                }`}
-                >
-                  {tab.name}
-                </Text>
-              </View>
-            ))}
+          <View className="px-4 py-3 border-b border-gray-200">
+            <Text className="text-base font-bold text-gray-900">商品详情</Text>
           </View>
           
-          {/* 内容区域 */}
           <View className="p-4">
-            {/* 商品详情图片 */}
-            {activeTab === 'detail' && (
-              <View>
-                {detailImages.length > 0 ? (
-                  <View className="flex flex-col gap-2">
-                    {detailImages.map((img, index) => (
-                      <Image
-                        key={index}
-                        src={img}
-                        mode="widthFix"
-                        className="w-full"
-                        onClick={() => handleImagePreview(detailImages, index)}
-                      />
-                    ))}
-                  </View>
-                ) : (
-                  <View className="flex items-center justify-center py-10">
-                    <Text className="text-gray-400">暂无商品详情图片</Text>
-                  </View>
-                )}
+            {detailImages.length > 0 ? (
+              <View className="flex flex-col gap-2">
+                {detailImages.map((img, index) => (
+                  <Image
+                    key={index}
+                    src={img}
+                    mode="widthFix"
+                    className="w-full"
+                    onClick={() => handleImagePreview(detailImages, index)}
+                  />
+                ))}
               </View>
-            )}
-            
-            {/* 实拍视频 */}
-            {activeTab === 'video' && (
-              <View>
-                {videos.length > 0 ? (
-                  <View className="flex flex-col gap-4">
-                    {videos.map((videoUrl, index) => (
-                      <Video
-                        key={index}
-                        src={videoUrl}
-                        className="w-full"
-                        style={{ height: '200px' }}
-                        controls
-                        showFullscreenBtn
-                        showPlayBtn
-                        showCenterPlayBtn
-                      />
-                    ))}
-                  </View>
-                ) : (
-                  <View className="flex items-center justify-center py-10">
-                    <Text className="text-gray-400">暂无实拍视频</Text>
-                  </View>
-                )}
-              </View>
-            )}
-            
-            {/* 实拍图 */}
-            {activeTab === 'photos' && (
-              <View>
-                {photos.length > 0 ? (
-                  <View className="flex flex-col gap-2">
-                    {photos.map((img, index) => (
-                      <Image
-                        key={index}
-                        src={img}
-                        mode="widthFix"
-                        className="w-full"
-                        onClick={() => handleImagePreview(photos, index)}
-                      />
-                    ))}
-                  </View>
-                ) : (
-                  <View className="flex items-center justify-center py-10">
-                    <Text className="text-gray-400">暂无实拍图</Text>
-                  </View>
-                )}
+            ) : (
+              <View className="flex items-center justify-center py-10">
+                <Text className="text-gray-400">暂无商品详情图片</Text>
               </View>
             )}
           </View>
