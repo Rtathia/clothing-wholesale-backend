@@ -22,6 +22,10 @@ const bannerItems = [
     id: 2, 
     imageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2Fbanner1.jpg&nonce=44f8cca5-d35e-4ea0-86ea-db4c9232d9a1&project_id=7619676618268688390&sign=0c2cce38d6c5563a62f120c98c87077b045042dd3dba7f51c1f108828ae9d76f' 
   },
+  { 
+    id: 3, 
+    imageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F3.png&nonce=e716f209-4b0f-4578-9856-36c542e94e7d&project_id=7619676618268688390&sign=4c1d714c58390185f5938141d443cc191dd96ae9d389eca9b5f143ccf5a109ed' 
+  },
 ]
 
 const HomePage: FC = () => {
