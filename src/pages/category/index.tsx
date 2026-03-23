@@ -167,9 +167,9 @@ const CategoryPage: FC = () => {
 
   return (
     <View className="flex flex-col bg-gray-50" style={{ height: 'calc(100vh - 50px)' }}>
-      <View className="flex flex-1">
-        {/* 左侧筛选区 */}
-        <View className="w-24 bg-white border-r border-gray-200 flex flex-col">
+      <View className="flex flex-1 overflow-hidden">
+        {/* 左侧筛选区 - 固定不动 */}
+        <View className="w-24 bg-white border-r border-gray-200 flex flex-col h-full overflow-y-auto flex-shrink-0">
           {/* 品类 */}
           <View className="p-2 border-b border-gray-100">
             <Text className="block text-xs font-semibold text-gray-700 mb-2">品类</Text>
