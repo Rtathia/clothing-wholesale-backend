@@ -155,17 +155,31 @@ const AdminPage: FC = () => {
       setUploading(true)
       
       for (const filePath of res.tempFilePaths) {
+        console.log('开始上传图片:', filePath)
         const uploadRes = await Network.uploadFile({
           url: '/api/admin/upload',
           filePath,
           name: 'file',
         })
         
+        console.log('上传响应:', uploadRes)
+        
+        // 解析响应数据（可能是字符串或对象）
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const result = uploadRes.data as any
-        const url = result?.data?.url || result?.url
+        let result: any = uploadRes.data
+        if (typeof result === 'string') {
+          try {
+            result = JSON.parse(result)
+          } catch (e) {
+            console.error('解析响应失败:', e)
+          }
+        }
+        
+        console.log('解析后的结果:', result)
+        const url = result?.url || result?.data?.url
         
         if (url) {
+          console.log('获取到URL:', url)
           if (type === 'cover') {
             setProductForm(prev => ({ ...prev, imageUrl: url }))
           } else if (type === 'detail') {
@@ -173,6 +187,8 @@ const AdminPage: FC = () => {
           } else if (type === 'photos') {
             setProductForm(prev => ({ ...prev, photos: [...prev.photos, url] }))
           }
+        } else {
+          console.error('未能获取到URL:', result)
         }
       }
       
@@ -196,19 +212,36 @@ const AdminPage: FC = () => {
       
       setUploading(true)
       
+      console.log('开始上传视频:', res.tempFilePath)
       const uploadRes = await Network.uploadFile({
         url: '/api/admin/upload',
         filePath: res.tempFilePath,
         name: 'file',
       })
       
+      console.log('上传响应:', uploadRes)
+      
+      // 解析响应数据（可能是字符串或对象）
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const result = uploadRes.data as any
-      const url = result?.data?.url || result?.url
+      let result: any = uploadRes.data
+      if (typeof result === 'string') {
+        try {
+          result = JSON.parse(result)
+        } catch (e) {
+          console.error('解析响应失败:', e)
+        }
+      }
+      
+      console.log('解析后的结果:', result)
+      const url = result?.url || result?.data?.url
       
       if (url) {
+        console.log('获取到URL:', url)
         setProductForm(prev => ({ ...prev, videos: [...prev.videos, url] }))
         Taro.showToast({ title: '上传成功', icon: 'success' })
+      } else {
+        console.error('未能获取到URL:', result)
+        Taro.showToast({ title: '上传失败', icon: 'none' })
       }
     } catch (error) {
       console.error('上传失败:', error)
