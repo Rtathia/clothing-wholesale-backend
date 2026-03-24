@@ -91,32 +91,17 @@ const HomePage: FC = () => {
       {/* 顶部搜索栏 */}
       <View className="sticky top-0 z-20 bg-white border-b border-gray-100">
         <View className="px-4 py-3">
-          <View className="flex items-center gap-3">
-            {/* Logo/品牌名 */}
-            <Text className="block text-base font-bold text-gray-900">广州柳乐服饰有限公司</Text>
-            {/* 搜索框 */}
-            <View className="flex-1 flex items-center bg-gray-100 rounded-full px-4 py-2">
-              <Text className="block text-gray-400 mr-2">🔍</Text>
-              <View className="flex-1">
-                <Input
-                  className="w-full bg-transparent text-sm"
-                  placeholder="搜索商品..."
-                  value={searchText}
-                  onInput={(e) => setSearchText(e.detail.value)}
-                  onConfirm={handleSearch}
-                />
-              </View>
-            </View>
-            {/* 拍照搜索 */}
-            <View className="p-2">
-              <Text className="block text-xl">📷</Text>
-            </View>
-            {/* 后台管理入口 */}
-            <View 
-              className="p-2"
-              onClick={() => Taro.navigateTo({ url: '/pages/admin/index' })}
-            >
-              <Text className="block text-xl">⚙️</Text>
+          {/* 搜索框 */}
+          <View className="flex items-center bg-gray-100 rounded-full px-4 py-2">
+            <Text className="block text-gray-400 mr-2">🔍</Text>
+            <View className="flex-1">
+              <Input
+                className="w-full bg-transparent text-sm"
+                placeholder="搜索商品..."
+                value={searchText}
+                onInput={(e) => setSearchText(e.detail.value)}
+                onConfirm={handleSearch}
+              />
             </View>
           </View>
         </View>

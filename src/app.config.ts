@@ -10,7 +10,7 @@ export default defineAppConfig({
   window: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#fff',
-    navigationBarTitleText: '服装定制',
+    navigationBarTitleText: '广州柳乐服饰有限公司',
     navigationBarTextStyle: 'black'
   },
   tabBar: {

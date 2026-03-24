@@ -53,7 +53,12 @@ const AboutPage: FC = () => {
         <View className="bg-white mx-4 mt-4 rounded-2xl p-5 shadow-sm">
           <View className="flex items-center mb-4">
             <View className="w-1 h-5 bg-blue-600 rounded-full mr-3" />
-            <Text className="text-lg font-bold text-gray-900">公司简介</Text>
+            <Text 
+              className="text-lg font-bold text-gray-900"
+              onClick={() => Taro.navigateTo({ url: '/pages/admin/index' })}
+            >
+              公司简介
+            </Text>
           </View>
           <Text className="block text-sm text-gray-600 leading-relaxed">
             广州柳乐服饰有限公司成立于2013年3月，是一家主营服装设计、生产及外贸销售的企业，公司拥有现代化的生产车间和专业的设计团队。
