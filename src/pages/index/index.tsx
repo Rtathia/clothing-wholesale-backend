@@ -41,8 +41,8 @@ interface Product {
   image_url: string | null
 }
 
-// 推荐产品ID列表（#AS001 #JS001 #CN001 #HL003 #PL001 #PN001）
-const FEATURED_PRODUCT_IDS = [9, 13, 15, 27, 28, 38]
+// 推荐产品ID列表（#AS001 #JS001 #CN001 #HL004 #PL001 #PN001）
+const FEATURED_PRODUCT_IDS = [9, 13, 15, 31, 28, 38]
 
 const HomePage: FC = () => {
   const [searchText, setSearchText] = useState('')
