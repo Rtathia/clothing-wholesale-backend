@@ -8,7 +8,7 @@ import './index.css'
 // 导航图标数据（4个）
 const navItems = [
   { id: 'all', name: '全部产品', icon: '📦', color: 'bg-blue-50' },
-  { id: 'polo', name: 'POLO系列', icon: '👕', color: 'bg-orange-50' },
+  { id: 'polo', name: '翻领系列', icon: '👕', color: 'bg-orange-50' },
   { id: 'tshirt', name: 'T恤系列', icon: '👔', color: 'bg-purple-50' },
   { id: 'hoodie', name: '卫衣系列', icon: '🎽', color: 'bg-pink-50' },
 ]
@@ -41,8 +41,8 @@ interface Product {
   image_url: string | null
 }
 
-// 推荐产品ID列表（#AS001 #JS001 #CN001 #JR001）
-const FEATURED_PRODUCT_IDS = [9, 13, 15, 16]
+// 推荐产品ID列表（#AS001 #JS001 #CN001 #HL003 #PL001 #PN001）
+const FEATURED_PRODUCT_IDS = [9, 13, 15, 27, 28, 38]
 
 const HomePage: FC = () => {
   const [searchText, setSearchText] = useState('')

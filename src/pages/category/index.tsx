@@ -58,7 +58,7 @@ const CategoryPage: FC = () => {
       Taro.removeStorageSync('categoryFilter')
       
       const categoryMap: Record<string, string> = {
-        'polo': 'POLO',
+        'polo': '翻领',
         'tshirt': 'T恤',
         'hoodie': '卫衣',
       }
@@ -100,7 +100,7 @@ const CategoryPage: FC = () => {
         Taro.removeStorageSync('categoryFilter')
         
         const categoryMap: Record<string, string> = {
-          'polo': 'POLO',
+          'polo': '翻领',
           'tshirt': 'T恤',
           'hoodie': '卫衣',
         }
