@@ -1,7 +1,8 @@
 import { View, Text, ScrollView, Swiper, SwiperItem, Input, Image } from '@tarojs/components'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Taro from '@tarojs/taro'
 import type { FC } from 'react'
+import { Network } from '@/network'
 import './index.css'
 
 // 导航图标数据（4个）
@@ -32,8 +33,40 @@ const bannerItems = [
   },
 ]
 
+// 推荐产品类型
+interface Product {
+  id: number
+  name: string
+  price: number
+  image_url: string | null
+}
+
+// 推荐产品ID列表（#AS001 #JS001 #CN001 #JR001）
+const FEATURED_PRODUCT_IDS = [9, 13, 15, 16]
+
 const HomePage: FC = () => {
   const [searchText, setSearchText] = useState('')
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
+  
+  // 获取推荐产品
+  useEffect(() => {
+    fetchFeaturedProducts()
+  }, [])
+  
+  const fetchFeaturedProducts = async () => {
+    try {
+      // 获取所有产品，然后筛选推荐的产品
+      const res = await Network.request({
+        url: '/api/shop/products',
+      })
+      const allProducts = res.data.data || res.data || []
+      // 筛选出推荐产品
+      const featured = allProducts.filter((p: Product) => FEATURED_PRODUCT_IDS.includes(p.id))
+      setFeaturedProducts(featured)
+    } catch (error) {
+      console.error('获取推荐产品失败:', error)
+    }
+  }
 
   // 搜索
   const handleSearch = () => {
@@ -143,20 +176,25 @@ const HomePage: FC = () => {
           </View>
           
           <View className="grid grid-cols-2 gap-3">
-            {[
-              { id: 1, name: '经典POLO衫', price: '89' },
-              { id: 2, name: '纯棉圆领T恤', price: '59' },
-              { id: 3, name: '运动卫衣', price: '159' },
-              { id: 4, name: '商务长袖POLO', price: '129' },
-            ].map((product) => (
+            {featuredProducts.map((product) => (
               <View
                 key={product.id}
                 className="bg-white rounded-xl overflow-hidden shadow-sm"
                 onClick={() => Taro.navigateTo({ url: `/pages/product-detail/index?id=${product.id}` })}
               >
                 {/* 商品图片 */}
-                <View className="w-full h-36 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                  <Text className="block text-5xl text-gray-300">👕</Text>
+                <View className="w-full h-36 bg-white">
+                  {product.image_url ? (
+                    <Image 
+                      src={product.image_url}
+                      mode="aspectFill"
+                      className="w-full h-full"
+                    />
+                  ) : (
+                    <View className="w-full h-full flex items-center justify-center">
+                      <Text className="block text-5xl text-gray-300">👕</Text>
+                    </View>
+                  )}
                 </View>
                 {/* 商品信息 */}
                 <View className="p-3">
@@ -166,7 +204,7 @@ const HomePage: FC = () => {
                   <View className="flex items-baseline mt-2">
                     <Text className="block text-xs text-orange-500">¥</Text>
                     <Text className="block text-lg font-bold text-orange-500">
-                      {product.price}
+                      {(product.price / 100).toFixed(2)}
                     </Text>
                   </View>
                 </View>
