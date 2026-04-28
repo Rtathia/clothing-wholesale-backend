@@ -13,23 +13,23 @@ const navItems = [
   { id: 'hoodie', name: '卫衣系列', icon: '🎽', color: 'bg-pink-50' },
 ]
 
-// Banner数据（使用图片）
+// Banner数据（使用永久URL）
 const bannerItems = [
   { 
     id: 1, 
-    imageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F1321321.jpg&nonce=db6a56c3-b257-473a-a166-b5415539912a&project_id=7619676618268688390&sign=75188a79a24598950bcac84bbe32a61f6a6c75d021b69bb0567de4ed0a95643a' 
+    imageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/liule/1321321_7c94d2d2.jpg?sign=1779965007-4767d3b0df-0-4dd1f3ae0c77ec5d5eeaa394eb2803cec4d4cf1f7b2bde0410805bf976f2a9a6' 
   },
   { 
     id: 2, 
-    imageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2Fbanner1.jpg&nonce=44f8cca5-d35e-4ea0-86ea-db4c9232d9a1&project_id=7619676618268688390&sign=0c2cce38d6c5563a62f120c98c87077b045042dd3dba7f51c1f108828ae9d76f' 
+    imageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/liule/banner1_7f31072a.jpg?sign=1779965008-6b5e33937d-0-e4a89960dc9ea3c938ad575b212e9107a8e371b917d36d645783bb8ec239f6f6' 
   },
   { 
     id: 3, 
-    imageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F3.png&nonce=e716f209-4b0f-4578-9856-36c542e94e7d&project_id=7619676618268688390&sign=4c1d714c58390185f5938141d443cc191dd96ae9d389eca9b5f143ccf5a109ed' 
+    imageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/liule/3_21cf1e05.png?sign=1779965007-98e5826138-0-27b35bc69b0f10e6e22297515a6f9163f41e2b8e8da12df2a81617a4dd60189d' 
   },
   { 
     id: 4, 
-    imageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F444444.jpg&nonce=74f71b20-8180-49d2-b59d-e9d8ca3efdc1&project_id=7619676618268688390&sign=0643e0ea68f0cce6534bed697ce94978152a854c9d77ce62ce93780f4796c4ed' 
+    imageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/liule/444444_dce47dfb.jpg?sign=1779965008-5297a465d8-0-d8ec22e1dfe4acf8f8565cdcc190cc64739837c2ff098eb1225410fc470d328f' 
   },
 ]
 

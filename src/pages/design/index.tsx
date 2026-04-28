@@ -6,49 +6,49 @@ import { Button } from '@/components/ui/button'
 import { Network } from '@/network'
 import './index.css'
 
-// 颜色选项与对应图片URL（正面和背面分开）
+// 颜色选项与对应图片URL（正面和背面分开，使用永久URL）
 const colorOptions = [
   { 
     id: 'white', 
     name: '白色', 
     border: true, 
-    frontImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E7%99%BD%E8%89%B2%E6%AD%A3%E9%9D%A2.png&nonce=0255cb34-9343-4fc5-b2ba-204410486f51&project_id=7619676618268688390&sign=8045b57237364629c06adeeb20677f6eb9e9eece1e0547fe446db20673bf7310',
-    backImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E7%99%BD%E8%89%B2%E8%83%8C%E9%9D%A2.png&nonce=d1172342-7cb8-4c9b-a428-a2f460cfbaef&project_id=7619676618268688390&sign=581ca23c4ce4da79aec5762e28ac751c2749eb3f560bc18a0ff067dcf0826bfa'
+    frontImageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/liule/Bai_Se_Zheng_Mian_53c06ed2.png?sign=1779965012-7d06f189f3-0-f3bc67607fccae64a99e7e13ed79afd78173b80cfb8bee3477a635534d872de5',
+    backImageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/liule/Bai_Se_Bei_Mian_9e8f972b.png?sign=1779965013-d38a7ec996-0-e8c7a9435c8db841778b61763c3b4c915554f5b2598fc36275e6380e7b0fe312'
   },
   { 
     id: 'black', 
     name: '黑色', 
     border: false, 
-    frontImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E9%BB%91%E8%89%B2%E6%AD%A3%E9%9D%A2.png&nonce=378c25e4-48fb-4cca-9de4-ad92335cacca&project_id=7619676618268688390&sign=96b6464518f1f57cee96278bf6499348465b77398ebd089357c7ffad7d0cfeb4',
-    backImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E9%BB%91%E8%89%B2%E8%83%8C%E9%9D%A2.png&nonce=531dee14-1801-4c90-8912-088b97b9fd3d&project_id=7619676618268688390&sign=82caf8d2ec3f28bbac51bdc1088040cfc28221e60ab70e08a03e219a6da0df1a'
+    frontImageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/liule/Hei_Se_Zheng_Mian_b3959f5d.png?sign=1779965015-9bae4fb7ff-0-2f54bebc4edaaaeb59895f21e8a91d5757b9e65abe733f35da811c0803693bf3',
+    backImageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/liule/Hei_Se_Bei_Mian_7a1e7a76.png?sign=1779965015-7d668d2361-0-1b83ddb1754372f4c08605e5a4676413c5500edf36e46a83ef19584d889e43ec'
   },
   { 
     id: 'navy', 
     name: '藏青', 
     border: false, 
-    frontImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E8%97%8F%E9%9D%92%E6%AD%A3%E9%9D%A2.png&nonce=7fb0ac23-5062-46e1-9121-f1b0834142e4&project_id=7619676618268688390&sign=1b59f849e2c5adc6228757e8ce819619e94561de88805f7092ef19b9c64451eb',
-    backImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E8%97%8F%E9%9D%92%E8%83%8C%E9%9D%A2.png&nonce=582f0d40-e212-4a8b-a1c3-8c019ead3904&project_id=7619676618268688390&sign=e775474b4a9d849857b37030e8ff647d0df902c78f1db35deace035307ec23a2'
+    frontImageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/liule/Cang_Qing_Zheng_Mian_1a4eaacb.png?sign=1779965014-0170e9f2e0-0-38c4aed58da89b67d7bf902863b5e56e79804a3ee393d4c277b38ee07f27eae8',
+    backImageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/liule/Cang_Qing_Bei_Mian_d5e7e5b5.png?sign=1779965014-50ebe29ccb-0-a8948ce40b07ad92c42b1dcbdb89565253e16373c14ef14d42a0827359c81552'
   },
   { 
     id: 'dark-gray', 
     name: '深灰', 
     border: false, 
-    frontImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E6%B7%B1%E7%81%B0%E6%AD%A3%E9%9D%A2.png&nonce=0eaa0c4e-ac66-455f-b7bd-2b9a880ef88f&project_id=7619676618268688390&sign=320df5ba9c85dc78368215c525ae1be70d7373f51f279e4124151dcc8d3ed732',
-    backImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E6%B7%B1%E7%81%B0%E8%83%8C%E9%9D%A2.png&nonce=49f73f94-b108-4b9a-b418-b4572d86c249&project_id=7619676618268688390&sign=da4bca74f752a936895805ad4223d23d6f9ff38c67e1c67d3c926fa4a66cb8b3'
+    frontImageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/liule/Shen_Hui_Zheng_Mian_8edb433e.png?sign=1779965012-bae1459a59-0-e22548560eef12b7159f8281e114f03e7a693d09bf77073d44d7a0294df28982',
+    backImageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/liule/Shen_Hui_Bei_Mian_fbc49929.png?sign=1779965012-26c95d2ff8-0-8dd26cb83668277b25f5d6a44cfdb906c6bc98af26ae9ca39ae3a2e18e61160e'
   },
   { 
     id: 'light-gray', 
     name: '浅灰', 
     border: true, 
-    frontImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E6%B5%85%E7%81%B0%E6%AD%A3%E9%9D%A2.png&nonce=6d28ea36-76e5-4e7a-a758-a5209817310e&project_id=7619676618268688390&sign=0674ec3b63e13adcb1e9a42e56bd43ef72e37d45610e5a5268302b5891b5eeae',
-    backImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E6%B5%85%E7%81%B0%E8%83%8C%E9%9D%A2.png&nonce=cda64e5f-6d87-4856-a6d6-02b8276b5121&project_id=7619676618268688390&sign=93091d597a439f1b2aa9d4645964e930a1d0fb8c168b65a63df2aec3a9cd243a'
+    frontImageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/liule/Qian_Hui_Zheng_Mian_3956e8c7.png?sign=1779965010-ab0413dcdf-0-eb3663275bacf39bee964cfbeb22e682cabb4887e8874c126f1efbf25e76f97b',
+    backImageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/liule/Qian_Hui_Bei_Mian_99c34bb6.png?sign=1779965011-28e63a752b-0-afd4bd0fec51c7558a773fe5d9d48d212dc8d541ee451a239d6715231f7f01d3'
   },
   { 
     id: 'blue', 
     name: '蓝色', 
     border: false, 
-    frontImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E8%93%9D%E8%89%B2%E6%AD%A3%E9%9D%A2.png&nonce=e65c61ca-475a-424b-9eed-6a85f22fb2a0&project_id=7619676618268688390&sign=5953b75a261783261141899b6d20abc10e07827dce4e2b7a0eab9fd28316e168',
-    backImageUrl: 'https://code.coze.cn/api/sandbox/coze_coding/file/proxy?expire_time=-1&file_path=assets%2F%E8%93%9D%E8%89%B2%E8%83%8C%E9%9D%A2.png&nonce=02cfd257-06ae-4203-b6ca-c5954e692dc9&project_id=7619676618268688390&sign=65352d3dfea77e3683432bad5f5fa42b64bad53981c7058050b987b128d17776'
+    frontImageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/liule/Lan_Se_Zheng_Mian_56d9cea8.png?sign=1779965013-b27bea7adf-0-d1d087262549714d76c93f2867db517698237e34f9735984f8a0b7ce020e4fdd',
+    backImageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/liule/Lan_Se_Bei_Mian_f3ac2257.png?sign=1779965014-184da188d1-0-cc929a26970f48058c84c46896a1a795c88d94e788fbb68bf79a39a6d788737c'
   },
 ]
 
