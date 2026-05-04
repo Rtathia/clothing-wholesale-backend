@@ -37,7 +37,7 @@ const AboutPage: FC = () => {
         {/* 顶部Banner */}
         <View className="relative h-48">
           <Image 
-            src="https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/bg_e4038094.jpg?sign=1809400207-d95fca68ef-0-c8d3029cea2dd7a85656aa5d7d01490dffcbb702afe499b7f61d42b159f17510"
+            src="https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/bg_e4038094.jpg?sign=1809414687-5272457d2b-0-d7b7cce29188d9c0fdadaf7822e0eca0cf8d552ef47b00dcee8f9b60fc34185e"
             mode="aspectFill"
             className="w-full h-full"
           />

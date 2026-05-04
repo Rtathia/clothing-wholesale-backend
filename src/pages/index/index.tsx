@@ -13,23 +13,23 @@ const navItems = [
   { id: 'hoodie', name: '卫衣系列', icon: '🎽', color: 'bg-pink-50' },
 ]
 
-// Banner数据（使用永久URL - 已刷新）
+// Banner数据（使用永久URL - 2025年5月更新）
 const bannerItems = [
   { 
     id: 1, 
-    imageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/1321321_ab2cfba1.jpg?sign=1809400204-2427857ae0-0-e813eb3c03f3f93ec3d795ed051365b9418bbe56e90ca8d4663fb16e4fd12995' 
+    imageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/1321321_ab2cfba1.jpg?sign=1809414686-4e7fa5c606-0-0f6205ba4745887ef51e650c28c6b95c3076a672fdbedfc2a39ca82298b98a8d' 
   },
   { 
     id: 2, 
-    imageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/banner1_5bb24b25.jpg?sign=1809400206-a679188307-0-7b6aed14bba5f7481d0bd06ce1bd9743faae6cc5556d6ba8eed649bfad11f0fe' 
+    imageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/banner1_5bb24b25.jpg?sign=1809414687-aa856e1552-0-0495e6e72d54c67ac3a9e58fcb39f408d7bdc0f896deb76c724a434aefba23ed' 
   },
   { 
     id: 3, 
-    imageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/444444_fce93e2d.jpg?sign=1809400206-5b71efe632-0-a4fefda4ead04b35f8ae2cdc3dc3ca25302aa95b0d71efae689efd34188affad' 
+    imageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/444444_fce93e2d.jpg?sign=1809414687-429c5b5014-0-41f70e3d4762a6fe65a6bea35835fd2bdf372b25e9cb16c38c88cfaca544caa9' 
   },
   { 
     id: 4, 
-    imageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/3_8e95daa2.png?sign=1809400205-5bbc5fea51-0-b330dfd396fedbe9ddd4f5c150e80615a5a02c5bd34be9113c7b53498cc76fdc' 
+    imageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/3_8e95daa2.png?sign=1809414687-2578904239-0-bd7995086de30ea5cc25df885ebab0133665fe0ea0a557ef22db4583986cf501' 
   },
 ]
 
