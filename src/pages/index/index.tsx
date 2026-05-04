@@ -17,19 +17,19 @@ const navItems = [
 const bannerItems = [
   { 
     id: 1, 
-    imageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/1321321_ab2cfba1.jpg?sign=1809414686-4e7fa5c606-0-0f6205ba4745887ef51e650c28c6b95c3076a672fdbedfc2a39ca82298b98a8d' 
+    imageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/1321321_ab2cfba1.jpg?sign=1809417790-acfd02bb81-0-8eef254c84180b8117ec37915ad2cfdba76abd12a60ca93ce67fbe6a2d2df448' 
   },
   { 
     id: 2, 
-    imageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/banner1_5bb24b25.jpg?sign=1809414687-aa856e1552-0-0495e6e72d54c67ac3a9e58fcb39f408d7bdc0f896deb76c724a434aefba23ed' 
+    imageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/banner1_5bb24b25.jpg?sign=1809417790-4afe4c0714-0-3fddb47d9be788227af5ffd1befbe4f62345647ee9809096516a3204791d90e8' 
   },
   { 
     id: 3, 
-    imageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/444444_fce93e2d.jpg?sign=1809414687-429c5b5014-0-41f70e3d4762a6fe65a6bea35835fd2bdf372b25e9cb16c38c88cfaca544caa9' 
+    imageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/444444_fce93e2d.jpg?sign=1809417790-236544b185-0-8c4cfa70ac1197d21cfa9d29c483a3a782c0dc0fe0581945f310a84628aaf0e1' 
   },
   { 
     id: 4, 
-    imageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/3_8e95daa2.png?sign=1809414687-2578904239-0-bd7995086de30ea5cc25df885ebab0133665fe0ea0a557ef22db4583986cf501' 
+    imageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/3_8e95daa2.png?sign=1809417790-a8a82ca406-0-6e0ea57c6015fd2ed36badd4459cb3ad2670f54ed75848d429488f068701882d' 
   },
 ]
 
