@@ -1,130 +1,97 @@
-import { pgTable, serial, timestamp, varchar, integer, text, boolean } from "drizzle-orm/pg-core"
+import { pgTable, serial, varchar, integer, boolean, timestamp, text } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
-// 系统健康检查表（保留，禁止删除）
+
+
+export const categories = pgTable("categories", {
+	id: serial().notNull(),
+	name: varchar({ length: 50 }).notNull(),
+	icon: varchar({ length: 10 }),
+	sortOrder: integer("sort_order").default(0),
+	isActive: boolean("is_active").default(true),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }),
+});
+
+export const crafts = pgTable("crafts", {
+	id: serial().notNull(),
+	name: varchar({ length: 50 }).notNull(),
+	icon: varchar({ length: 10 }),
+	sortOrder: integer("sort_order").default(0),
+	isActive: boolean("is_active").default(true),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }),
+});
+
+export const fabrics = pgTable("fabrics", {
+	id: serial().notNull(),
+	name: varchar({ length: 50 }).notNull(),
+	icon: varchar({ length: 10 }),
+	sortOrder: integer("sort_order").default(0),
+	isActive: boolean("is_active").default(true),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }),
+});
+
 export const healthCheck = pgTable("health_check", {
 	id: serial().notNull(),
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow(),
 });
 
-// ==================== 基础分类表 ====================
-
-// 产品分类表：POLO衫、T恤、卫衣等
-export const categories = pgTable("categories", {
-	id: serial().notNull(),
-	name: varchar("name", { length: 50 }).notNull(),
-	icon: varchar("icon", { length: 10 }),
-	sortOrder: integer("sort_order").default(0),
-	isActive: boolean("is_active").default(true),
-	createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-	updatedAt: timestamp("updated_at", { withTimezone: true }),
-});
-
-// 布料类型表：纯棉、纯涤、棉涤混纺
-export const fabrics = pgTable("fabrics", {
-	id: serial().notNull(),
-	name: varchar("name", { length: 50 }).notNull(),
-	icon: varchar("icon", { length: 10 }),
-	sortOrder: integer("sort_order").default(0),
-	isActive: boolean("is_active").default(true),
-	createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-	updatedAt: timestamp("updated_at", { withTimezone: true }),
-});
-
-// 工艺类型表：印刷、刺绣
-export const crafts = pgTable("crafts", {
-	id: serial().notNull(),
-	name: varchar("name", { length: 50 }).notNull(),
-	icon: varchar("icon", { length: 10 }),
-	sortOrder: integer("sort_order").default(0),
-	isActive: boolean("is_active").default(true),
-	createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-	updatedAt: timestamp("updated_at", { withTimezone: true }),
-});
-
-// 版型表：修身、常规、宽松
 export const fits = pgTable("fits", {
 	id: serial().notNull(),
-	name: varchar("name", { length: 50 }).notNull(),
+	name: varchar({ length: 50 }).notNull(),
 	sortOrder: integer("sort_order").default(0),
 	isActive: boolean("is_active").default(true),
-	createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-	updatedAt: timestamp("updated_at", { withTimezone: true }),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }),
 });
 
-// 款式表：短袖、长袖、套头
 export const styles = pgTable("styles", {
 	id: serial().notNull(),
-	name: varchar("name", { length: 50 }).notNull(),
+	name: varchar({ length: 50 }).notNull(),
 	sortOrder: integer("sort_order").default(0),
 	isActive: boolean("is_active").default(true),
-	createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-	updatedAt: timestamp("updated_at", { withTimezone: true }),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }),
 });
 
-// ==================== T恤颜色图片表 ====================
-
-// T恤颜色图片表：白色、黑色、藏青等
 export const tshirtColors = pgTable("tshirt_colors", {
 	id: serial().notNull(),
-	name: varchar("name", { length: 50 }).notNull(),
+	name: varchar({ length: 50 }).notNull(),
 	colorCode: varchar("color_code", { length: 20 }),
 	imageUrl: text("image_url").notNull(),
 	sortOrder: integer("sort_order").default(0),
 	isActive: boolean("is_active").default(true),
-	createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-	updatedAt: timestamp("updated_at", { withTimezone: true }),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }),
 });
 
-// ==================== 尺码表 ====================
-
-// 尺码表：S, M, L, XL, 2XL, 3XL, 4XL, 5XL 等
-export const sizes = pgTable("sizes", {
-	id: serial().notNull(),
-	name: varchar("name", { length: 20 }).notNull(), // 如: S, M, L, XL, 2XL
-	sortOrder: integer("sort_order").default(0), // 排序：数字越小越靠前
-	isActive: boolean("is_active").default(true),
-	createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-	updatedAt: timestamp("updated_at", { withTimezone: true }),
-});
-
-// 产品尺码关联表：每个产品可以选择多个尺码，每个尺码可以设置库存
-export const productSizes = pgTable("product_sizes", {
-	id: serial().notNull(),
-	productId: integer("product_id").notNull().references(() => products.id),
-	sizeId: integer("size_id").notNull().references(() => sizes.id),
-	stock: integer("stock").default(0), // 该尺码的库存数量，-1表示无限库存
-	isActive: boolean("is_active").default(true), // 该尺码是否可用（可用于上下架某个尺码）
-	createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-	updatedAt: timestamp("updated_at", { withTimezone: true }),
-});
-
-// ==================== 产品表 ====================
-
-// 产品表
 export const products = pgTable("products", {
 	id: serial().notNull(),
-	name: varchar("name", { length: 200 }).notNull(),
-	description: text("description"),
-	price: integer("price").notNull(), // 单位：分
+	name: varchar({ length: 200 }).notNull(),
+	description: text(),
+	price: integer().notNull(),
 	imageUrl: text("image_url"),
-	
-	// 关联分类
 	categoryId: integer("category_id"),
 	fabricId: integer("fabric_id"),
 	craftId: integer("craft_id"),
 	fitId: integer("fit_id"),
 	styleId: integer("style_id"),
-	
-	// 详情内容（JSON数组格式存储图片URL）
-	detailImages: text("detail_images"), // 商品详情图片，JSON数组
-	videos: text("videos"), // 实拍视频，JSON数组
-	photos: text("photos"), // 实拍图，JSON数组
-	
-	// 状态
 	isActive: boolean("is_active").default(true),
 	sortOrder: integer("sort_order").default(0),
-	
-	createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-	updatedAt: timestamp("updated_at", { withTimezone: true }),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }),
+	detailImages: text("detail_images"),
+	videos: text(),
+	photos: text(),
+});
+
+export const sizes = pgTable("sizes", {
+	id: serial().primaryKey().notNull(),
+	name: varchar({ length: 20 }).notNull(),
+	sortOrder: integer("sort_order").default(0),
+	isActive: boolean("is_active").default(true),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }),
 });
