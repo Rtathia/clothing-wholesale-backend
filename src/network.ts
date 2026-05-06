@@ -9,11 +9,14 @@ import Taro from '@tarojs/taro'
  * IMPORTANT: 除非你需要添加全局参数，如给所有请求加上 header，否则不能修改此文件
  */
 export namespace Network {
+    // 云端API域名（已硬编码，下载到本地也能正常工作）
+    const API_DOMAIN = 'https://d71f2ada-4d7c-4359-95d8-9213146d0686.dev.coze.site'
+
     const createUrl = (url: string): string => {
         if (url.startsWith('http://') || url.startsWith('https://')) {
             return url
         }
-        return `${PROJECT_DOMAIN}${url}`
+        return `${API_DOMAIN}${url}`
     }
 
     export const request: typeof Taro.request = option => {
