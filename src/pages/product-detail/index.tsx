@@ -143,6 +143,42 @@ const ProductDetailPage: FC = () => {
     })
   }
 
+  // 分享给朋友
+  const onShareAppMessage = () => {
+    return {
+      title: product?.name || '服装批发产品',
+      desc: product?.description || '优质服装，厂家直批',
+      path: `/pages/product-detail/index?id=${product?.id}`,
+      imageUrl: product?.image_url || ''
+    }
+  }
+
+  // 分享到朋友圈
+  const onShareTimeline = () => {
+    return {
+      title: product?.name || '服装批发产品',
+      query: `id=${product?.id}`,
+      imageUrl: product?.image_url || ''
+    }
+  }
+
+  // 挂载分享事件
+  useEffect(() => {
+    Taro.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    } as any)
+    
+    // 动态绑定分享事件
+    Taro.eventCenter.on('onShareAppMessage', onShareAppMessage)
+    Taro.eventCenter.on('onShareTimeline', onShareTimeline)
+    
+    return () => {
+      Taro.eventCenter.off('onShareAppMessage', onShareAppMessage)
+      Taro.eventCenter.off('onShareTimeline', onShareTimeline)
+    }
+  }, [product])
+
   if (loading) {
     return (
       <View className="flex items-center justify-center h-screen bg-white">

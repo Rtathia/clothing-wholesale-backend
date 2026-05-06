@@ -48,9 +48,43 @@ const HomePage: FC = () => {
   const [searchText, setSearchText] = useState('')
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
   
+  // 分享给朋友
+  const onShareAppMessage = () => {
+    return {
+      title: '服装批发 - 厂家直供',
+      desc: '专业服装批发平台，款式丰富，品质保证',
+      path: '/pages/index/index',
+      imageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/1321321_ab2cfba1.jpg?sign=1809418401-5fd2206b0b-0-f7e72b724a01b10b98d73a7592021ba17b25e998c826e3a300d9c8e29ce1c037'
+    }
+  }
+
+  // 分享到朋友圈
+  const onShareTimeline = () => {
+    return {
+      title: '服装批发 - 厂家直供',
+      query: '',
+      imageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/1321321_ab2cfba1.jpg?sign=1809418401-5fd2206b0b-0-f7e72b724a01b10b98d73a7592021ba17b25e998c826e3a300d9c8e29ce1c037'
+    }
+  }
+
   // 获取推荐产品
   useEffect(() => {
+    // 开启分享菜单
+    Taro.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    } as any)
+    
+    // 动态绑定分享事件
+    Taro.eventCenter.on('onShareAppMessage', onShareAppMessage)
+    Taro.eventCenter.on('onShareTimeline', onShareTimeline)
+    
     fetchFeaturedProducts()
+    
+    return () => {
+      Taro.eventCenter.off('onShareAppMessage', onShareAppMessage)
+      Taro.eventCenter.off('onShareTimeline', onShareTimeline)
+    }
   }, [])
   
   const fetchFeaturedProducts = async () => {

@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, Image, MovableArea, MovableView } from '@tarojs/components'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Taro from '@tarojs/taro'
 import type { FC } from 'react'
 import { Button } from '@/components/ui/button'
@@ -68,6 +68,41 @@ const DesignPage: FC = () => {
   })
   const [isUploading, setIsUploading] = useState(false)
   const [isUploadingSleeve, setIsUploadingSleeve] = useState(false)
+
+  // 分享给朋友
+  const onShareAppMessage = () => {
+    return {
+      title: '服装设计定制 - 在线设计你的专属服装',
+      desc: '专业服装设计工具，支持Logo上传、颜色定制',
+      path: '/pages/design/index',
+      imageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/Bai_Se_Zheng_Mian_a4f804a7.png?sign=1809418522-d0b29b5c60-0-0eea418259600d8584b6314340b44718ab30a2870e9dbac1872c2f2fd6d1724f'
+    }
+  }
+
+  // 分享到朋友圈
+  const onShareTimeline = () => {
+    return {
+      title: '服装设计定制 - 在线设计你的专属服装',
+      query: '',
+      imageUrl: 'https://coze-coding-project.tos.coze.site/coze_storage_7619677622187884587/Bai_Se_Zheng_Mian_a4f804a7.png?sign=1809418522-d0b29b5c60-0-0eea418259600d8584b6314340b44718ab30a2870e9dbac1872c2f2fd6d1724f'
+    }
+  }
+
+  // 挂载分享事件
+  useEffect(() => {
+    Taro.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    } as any)
+    
+    Taro.eventCenter.on('onShareAppMessage', onShareAppMessage)
+    Taro.eventCenter.on('onShareTimeline', onShareTimeline)
+    
+    return () => {
+      Taro.eventCenter.off('onShareAppMessage', onShareAppMessage)
+      Taro.eventCenter.off('onShareTimeline', onShareTimeline)
+    }
+  }, [])
 
   // 获取当前颜色信息
   const currentColor = colorOptions.find((c) => c.id === selectedColor)
