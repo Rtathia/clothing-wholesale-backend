@@ -415,15 +415,10 @@ export class AdminService {
   async getProductSizes(productId: number) {
     const client = getSupabaseClient();
     try {
-      const { data, error } = await client
+      // 分步查询：先获取关联记录，再获取尺码详情
+      const { data: productSizes, error } = await client
         .from('product_sizes')
-        .select(`
-          id,
-          stock,
-          is_active,
-          size_id,
-          sizes: size_id (id, name, sort_order)
-        `)
+        .select('id, stock, is_active, size_id')
         .eq('product_id', productId);
       
       if (error) {
@@ -431,14 +426,32 @@ export class AdminService {
         return [];
       }
       
-      return (data || []).map((item: Record<string, unknown>) => ({
-        id: item.id,
-        sizeId: item.size_id,
-        sizeName: (item.sizes as Record<string, unknown>)?.name,
-        sortOrder: (item.sizes as Record<string, unknown>)?.sort_order,
-        stock: item.stock,
-        isActive: item.is_active,
-      }));
+      if (!productSizes || productSizes.length === 0) {
+        return [];
+      }
+      
+      // 获取所有尺码详情
+      const { data: allSizes } = await client
+        .from('sizes')
+        .select('id, name, sort_order')
+        .order('sort_order', { ascending: true });
+      
+      const sizeMap = new Map((allSizes || []).map(s => [s.id, s]));
+      
+      return productSizes
+        .filter(ps => sizeMap.has(ps.size_id))
+        .map(ps => {
+          const sizeInfo = sizeMap.get(ps.size_id);
+          return {
+            id: ps.id,
+            sizeId: ps.size_id,
+            sizeName: sizeInfo?.name || '',
+            sortOrder: sizeInfo?.sort_order || 0,
+            stock: ps.stock,
+            isActive: ps.is_active,
+          };
+        })
+        .sort((a, b) => a.sortOrder - b.sortOrder);
     } catch (error) {
       console.error('获取产品尺码异常:', error);
       return [];

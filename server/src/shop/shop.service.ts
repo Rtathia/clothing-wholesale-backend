@@ -131,33 +131,42 @@ export class ShopService {
     
     if (productError) throw new Error(productError.message);
     
-    // 获取产品关联的尺码信息（如果表不存在则返回空数组）
+    // 获取产品关联的尺码信息（分步查询，避免外键关联问题）
     let sizes: { id: number; sizeId: number; sizeName: string; sortOrder: number; stock: number; isActive: boolean }[] = [];
     try {
+      // 1. 获取该产品的尺码关联记录
       const { data: productSizes } = await client
         .from('product_sizes')
-        .select(`
-          id,
-          stock,
-          is_active,
-          size_id,
-          sizes: size_id (id, name, sort_order)
-        `)
+        .select('id, size_id, stock, is_active')
         .eq('product_id', id)
         .eq('is_active', true);
       
-      if (productSizes) {
-        sizes = (productSizes || []).map((item: Record<string, unknown>) => ({
-          id: item.id as number,
-          sizeId: item.size_id as number,
-          sizeName: (item.sizes as Record<string, unknown>)?.name as string,
-          sortOrder: (item.sizes as Record<string, unknown>)?.sort_order as number,
-          stock: item.stock as number,
-          isActive: item.is_active as boolean,
-        })).sort((a, b) => a.sortOrder - b.sortOrder);
+      if (productSizes && productSizes.length > 0) {
+        // 2. 获取所有尺码详情
+        const { data: allSizes } = await client
+          .from('sizes')
+          .select('id, name, sort_order')
+          .order('sort_order', { ascending: true });
+        
+        // 3. 在代码中合并数据
+        const sizeMap = new Map((allSizes || []).map(s => [s.id, s]));
+        sizes = productSizes
+          .filter(ps => sizeMap.has(ps.size_id))
+          .map(ps => {
+            const sizeInfo = sizeMap.get(ps.size_id);
+            return {
+              id: ps.id,
+              sizeId: ps.size_id,
+              sizeName: sizeInfo?.name || '',
+              sortOrder: sizeInfo?.sort_order || 0,
+              stock: ps.stock ?? -1,
+              isActive: ps.is_active ?? true,
+            };
+          })
+          .sort((a, b) => a.sortOrder - b.sortOrder);
       }
     } catch (error) {
-      console.error('获取产品尺码失败，可能是schema缓存未刷新:', error);
+      console.error('获取产品尺码失败:', error);
       // 返回空数组，不影响产品详情显示
     }
     
