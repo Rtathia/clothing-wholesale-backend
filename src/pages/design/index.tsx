@@ -259,7 +259,6 @@ const DesignPage: FC = () => {
     
     // 延迟弹出询盘弹窗，让用户看到保存成功提示
     setTimeout(() => {
-      setSaveSuccess(false)
       setShowInquiryDialog(true)
     }, 1500)
   }
