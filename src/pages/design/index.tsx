@@ -285,34 +285,36 @@ const DesignPage: FC = () => {
       // 获取保存的设计信息
       const savedDesign = Taro.getStorageSync('savedDesign') || {}
       
-      // 生成邮件内容
-      const subject = encodeURIComponent(`【询盘】服装定制咨询 - ${inquiryForm.name}`)
-      const body = encodeURIComponent(
-        `您好！\n\n` +
-        `我已完成服装设计，现发起询盘：\n\n` +
-        `【设计信息】\n` +
-        `- 服装类型：基础款T恤\n` +
-        `- 颜色：${savedDesign.colorName || selectedColor}\n` +
-        `- 正面Logo：${uploadedLogos.front?.url ? '已上传' : '未上传'}\n` +
-        `- 背面Logo：${uploadedLogos.back?.url ? '已上传' : '未上传'}\n` +
-        `- 袖子Logo：${uploadedLogos.sleeve?.url ? '已上传' : '未上传'}\n\n` +
-        `【询盘信息】\n` +
-        `- 件数：${inquiryForm.quantity} 件\n` +
-        `- 联系人：${inquiryForm.name}\n` +
-        `- 联系方式：${inquiryForm.phone}\n` +
-        `${inquiryForm.remarks ? `- 备注：${inquiryForm.remarks}\n` : ''}\n\n` +
-        `请尽快与我联系，谢谢！`
-      )
+      // 生成设计摘要
+      const designSummary = 
+        `服装类型：基础款T恤\n` +
+        `颜色：${savedDesign.colorName || selectedColor}\n` +
+        `正面Logo：${uploadedLogos.front?.url ? '已上传' : '未上传'}\n` +
+        `背面Logo：${uploadedLogos.back?.url ? '已上传' : '未上传'}\n` +
+        `袖子Logo：${uploadedLogos.sleeve?.url ? '已上传' : '未上传'}`
       
-      const mailtoUrl = `mailto:${DEFAULT_EMAIL}?subject=${subject}&body=${body}`
-      
-      // 跳转到邮箱
-      Taro.setClipboardData({
-        data: mailtoUrl,
-        success: () => {
-          Taro.showToast({ title: '邮箱链接已复制，请在手机邮箱中发送', icon: 'none', duration: 3000 })
-        }
+      // 调用后端 API 发送邮件
+      const res = await Network.request({
+        url: '/api/mail/inquiry',
+        method: 'POST',
+        data: {
+          email: DEFAULT_EMAIL,
+          contactName: inquiryForm.name,
+          phone: inquiryForm.phone,
+          quantity: inquiryForm.quantity,
+          notes: inquiryForm.remarks,
+          designSummary: designSummary,
+        },
       })
+      
+      console.log('邮件发送响应:', res.data)
+      
+      // 检查响应
+      if (res.data && res.data.code === 200) {
+        Taro.showToast({ title: '询盘已发送，我们会尽快联系您', icon: 'success', duration: 3000 })
+      } else {
+        Taro.showToast({ title: res.data?.msg || '发送失败，请重试', icon: 'none' })
+      }
       
       // 关闭弹窗
       setShowInquiryDialog(false)
@@ -327,7 +329,7 @@ const DesignPage: FC = () => {
       
     } catch (error) {
       console.error('提交失败:', error)
-      Taro.showToast({ title: '提交失败，请重试', icon: 'none' })
+      Taro.showToast({ title: '网络错误，请重试', icon: 'none' })
     } finally {
       setIsSubmitting(false)
     }
