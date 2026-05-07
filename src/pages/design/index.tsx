@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react'
 import Taro from '@tarojs/taro'
 import type { FC } from 'react'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
 import { Network } from '@/network'
 import './index.css'
 
@@ -58,16 +60,30 @@ const logoPositions = [
   { id: 'back', name: '背面' },
 ]
 
+// 默认邮箱（与"关于我们"页面保持一致）
+const DEFAULT_EMAIL = 'thx1755035817@gmail.com'
+
 const DesignPage: FC = () => {
   const [selectedColor, setSelectedColor] = useState('white')
   const [selectedPosition, setSelectedPosition] = useState('front')
   const [uploadedLogos, setUploadedLogos] = useState<Record<string, { url: string; x: number; y: number; scale: number }>>({
     'front': { url: '', x: 0, y: 0, scale: 1 },
     'back': { url: '', x: 0, y: 0, scale: 1 },
-    'sleeve': { url: '', x: 0, y: 0, scale: 1 }, // 袖子Logo（选填）
+    'sleeve': { url: '', x: 0, y: 0, scale: 1 },
   })
   const [isUploading, setIsUploading] = useState(false)
   const [isUploadingSleeve, setIsUploadingSleeve] = useState(false)
+  
+  // 询盘弹窗状态
+  const [showInquiryDialog, setShowInquiryDialog] = useState(false)
+  const [inquiryForm, setInquiryForm] = useState({
+    quantity: '',
+    name: '',
+    phone: '',
+    remarks: '',
+  })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [saveSuccess, setSaveSuccess] = useState(false)
 
   // 分享给朋友
   const onShareAppMessage = () => {
@@ -220,10 +236,113 @@ const DesignPage: FC = () => {
     }))
   }
 
-  // 保存设计
+  // 保存设计 - 先保存到本地，然后弹出询盘弹窗
   const handleSaveDesign = () => {
-    console.log('保存设计:', { color: selectedColor, logos: uploadedLogos })
-    Taro.showToast({ title: '设计已保存', icon: 'success' })
+    // 保存设计数据到本地存储
+    const designData = {
+      color: selectedColor,
+      colorName: currentColor?.name || '白色',
+      logos: uploadedLogos,
+      updateTime: new Date().toISOString(),
+    }
+    
+    try {
+      Taro.setStorageSync('savedDesign', designData)
+      console.log('设计已保存:', designData)
+    } catch (e) {
+      console.error('保存失败:', e)
+    }
+    
+    // 显示保存成功提示
+    setSaveSuccess(true)
+    Taro.showToast({ title: '设计已保存', icon: 'success', duration: 1500 })
+    
+    // 延迟弹出询盘弹窗，让用户看到保存成功提示
+    setTimeout(() => {
+      setSaveSuccess(false)
+      setShowInquiryDialog(true)
+    }, 1500)
+  }
+
+  // 提交询盘
+  const handleSubmitInquiry = async () => {
+    // 表单验证
+    if (!inquiryForm.quantity.trim()) {
+      Taro.showToast({ title: '请输入件数', icon: 'none' })
+      return
+    }
+    if (!inquiryForm.name.trim()) {
+      Taro.showToast({ title: '请输入联系人姓名', icon: 'none' })
+      return
+    }
+    if (!inquiryForm.phone.trim()) {
+      Taro.showToast({ title: '请输入联系方式', icon: 'none' })
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      // 获取保存的设计信息
+      const savedDesign = Taro.getStorageSync('savedDesign') || {}
+      
+      // 生成邮件内容
+      const subject = encodeURIComponent(`【询盘】服装定制咨询 - ${inquiryForm.name}`)
+      const body = encodeURIComponent(
+        `您好！\n\n` +
+        `我已完成服装设计，现发起询盘：\n\n` +
+        `【设计信息】\n` +
+        `- 服装类型：基础款T恤\n` +
+        `- 颜色：${savedDesign.colorName || selectedColor}\n` +
+        `- 正面Logo：${uploadedLogos.front?.url ? '已上传' : '未上传'}\n` +
+        `- 背面Logo：${uploadedLogos.back?.url ? '已上传' : '未上传'}\n` +
+        `- 袖子Logo：${uploadedLogos.sleeve?.url ? '已上传' : '未上传'}\n\n` +
+        `【询盘信息】\n` +
+        `- 件数：${inquiryForm.quantity} 件\n` +
+        `- 联系人：${inquiryForm.name}\n` +
+        `- 联系方式：${inquiryForm.phone}\n` +
+        `${inquiryForm.remarks ? `- 备注：${inquiryForm.remarks}\n` : ''}\n\n` +
+        `请尽快与我联系，谢谢！`
+      )
+      
+      const mailtoUrl = `mailto:${DEFAULT_EMAIL}?subject=${subject}&body=${body}`
+      
+      // 跳转到邮箱
+      Taro.setClipboardData({
+        data: mailtoUrl,
+        success: () => {
+          Taro.showToast({ title: '邮箱链接已复制，请在手机邮箱中发送', icon: 'none', duration: 3000 })
+        }
+      })
+      
+      // 关闭弹窗
+      setShowInquiryDialog(false)
+      
+      // 重置表单
+      setInquiryForm({
+        quantity: '',
+        name: '',
+        phone: '',
+        remarks: '',
+      })
+      
+    } catch (error) {
+      console.error('提交失败:', error)
+      Taro.showToast({ title: '提交失败，请重试', icon: 'none' })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  // 关闭询盘弹窗
+  const handleCloseInquiryDialog = () => {
+    setShowInquiryDialog(false)
+    setInquiryForm({
+      quantity: '',
+      name: '',
+      phone: '',
+      remarks: '',
+    })
   }
 
   return (
@@ -234,12 +353,29 @@ const DesignPage: FC = () => {
           <Text className="block text-lg font-semibold text-gray-900">设计定制</Text>
           <Text className="block text-sm text-gray-500">基础款T恤</Text>
         </View>
-        <Button size="sm" onClick={handleSaveDesign} className="bg-blue-600 text-white">
-          保存
+        <Button 
+          size="sm" 
+          onClick={handleSaveDesign} 
+          className={`${saveSuccess ? 'bg-green-600' : 'bg-blue-600'} text-white`}
+        >
+          {saveSuccess ? '✓ 已保存' : '保存'}
         </Button>
       </View>
 
       <ScrollView scrollY className="flex-1">
+        {/* 保存成功提示 */}
+        {saveSuccess && (
+          <View className="mx-4 mt-4 p-4 bg-green-50 rounded-xl border border-green-200">
+            <View className="flex items-center">
+              <Text className="text-green-600 text-xl mr-2">✓</Text>
+              <View>
+                <Text className="block text-sm font-medium text-green-800">设计已保存</Text>
+                <Text className="block text-xs text-green-600 mt-1">即将为您打开询盘表单...</Text>
+              </View>
+            </View>
+          </View>
+        )}
+
         {/* T恤预览区域 */}
         <View className="mx-4 mt-4 bg-white rounded-2xl shadow-sm overflow-hidden">
           <View 
@@ -467,6 +603,122 @@ const DesignPage: FC = () => {
           </Text>
         </View>
       </ScrollView>
+
+      {/* 询盘弹窗 */}
+      <Dialog open={showInquiryDialog} onOpenChange={setShowInquiryDialog}>
+        <DialogContent className="max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>填写询盘信息</DialogTitle>
+            <DialogDescription>完成设计后，请填写以下信息发起询盘</DialogDescription>
+          </DialogHeader>
+          
+          <View className="flex flex-col gap-4 py-4">
+            {/* 件数 */}
+            <View>
+              <Text className="block text-sm font-medium text-gray-700 mb-2">
+                <Text className="text-red-500">*</Text> 件数
+              </Text>
+              <View className="bg-gray-50 rounded-xl px-4 py-3">
+                <Input
+                  type="number"
+                  placeholder="请输入定制件数"
+                  value={inquiryForm.quantity}
+                  onInput={(e: any) => setInquiryForm(prev => ({ ...prev, quantity: e.detail.value }))}
+                />
+              </View>
+            </View>
+
+            {/* 联系人姓名 */}
+            <View>
+              <Text className="block text-sm font-medium text-gray-700 mb-2">
+                <Text className="text-red-500">*</Text> 联系人姓名
+              </Text>
+              <View className="bg-gray-50 rounded-xl px-4 py-3">
+                <Input
+                  placeholder="请输入您的姓名"
+                  value={inquiryForm.name}
+                  onInput={(e: any) => setInquiryForm(prev => ({ ...prev, name: e.detail.value }))}
+                />
+              </View>
+            </View>
+
+            {/* 联系方式 */}
+            <View>
+              <Text className="block text-sm font-medium text-gray-700 mb-2">
+                <Text className="text-red-500">*</Text> 联系方式
+              </Text>
+              <View className="bg-gray-50 rounded-xl px-4 py-3">
+                <Input
+                  type="number"
+                  placeholder="请输入手机号码"
+                  value={inquiryForm.phone}
+                  onInput={(e: any) => setInquiryForm(prev => ({ ...prev, phone: e.detail.value }))}
+                />
+              </View>
+            </View>
+
+            {/* 备注 */}
+            <View>
+              <Text className="block text-sm font-medium text-gray-700 mb-2">
+                备注（选填）
+              </Text>
+              <View className="bg-gray-50 rounded-xl px-4 py-3">
+                <Input
+                  placeholder="如有其他要求，请在此说明"
+                  value={inquiryForm.remarks}
+                  onInput={(e: any) => setInquiryForm(prev => ({ ...prev, remarks: e.detail.value }))}
+                />
+              </View>
+            </View>
+
+            {/* 设计信息摘要 */}
+            <View className="bg-gray-50 rounded-xl p-3">
+              <Text className="block text-xs text-gray-500 mb-2">当前设计摘要：</Text>
+              <View className="flex flex-wrap gap-2">
+                <View className="bg-white rounded-full px-3 py-1">
+                  <Text className="block text-xs text-gray-600">
+                    颜色：{colorOptions.find(c => c.id === selectedColor)?.name}
+                  </Text>
+                </View>
+                {uploadedLogos.front?.url && (
+                  <View className="bg-green-100 rounded-full px-3 py-1">
+                    <Text className="block text-xs text-green-700">正面Logo ✓</Text>
+                  </View>
+                )}
+                {uploadedLogos.back?.url && (
+                  <View className="bg-green-100 rounded-full px-3 py-1">
+                    <Text className="block text-xs text-green-700">背面Logo ✓</Text>
+                  </View>
+                )}
+                {uploadedLogos.sleeve?.url && (
+                  <View className="bg-green-100 rounded-full px-3 py-1">
+                    <Text className="block text-xs text-green-700">袖子Logo ✓</Text>
+                  </View>
+                )}
+              </View>
+            </View>
+          </View>
+          
+          {/* 弹窗按钮 */}
+          <View className="flex gap-3 pt-2">
+            <Button 
+              variant="outline" 
+              className="flex-1"
+              onClick={handleCloseInquiryDialog}
+              disabled={isSubmitting}
+            >
+              取消
+            </Button>
+            <Button 
+              className="flex-1 bg-blue-600 text-white"
+              onClick={handleSubmitInquiry}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? '提交中...' : '发送询盘邮件'}
+            </Button>
+          </View>
+        </DialogContent>
+      </Dialog>
     </View>
   )
 }
