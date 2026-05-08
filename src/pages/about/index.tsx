@@ -35,7 +35,18 @@ const AboutPage: FC = () => {
         if (ADMIN_OPENIDS.includes(openid)) {
           Taro.navigateTo({ url: '/pages/admin/index' })
         } else {
-          Taro.showToast({ title: '无权限访问', icon: 'none' })
+          // 非管理员，显示 OpenID 供反馈
+          Taro.setClipboardData({
+            data: `非管理员 OpenID: ${openid}，请将此ID发送给管理员添加权限`,
+            success: () => {
+              Taro.showModal({
+                title: '无权限',
+                content: `您的 OpenID:\n${openid}\n\n已复制到剪贴板，请发送给管理员添加权限`,
+                showCancel: false,
+                confirmText: '知道了'
+              })
+            }
+          })
         }
       }
     } catch (err) {
