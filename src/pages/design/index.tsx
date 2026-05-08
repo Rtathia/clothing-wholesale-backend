@@ -80,6 +80,7 @@ const DesignPage: FC = () => {
     quantity: '',
     name: '',
     phone: '',
+    email: '',
     remarks: '',
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -301,6 +302,7 @@ const DesignPage: FC = () => {
           email: DEFAULT_EMAIL,
           contactName: inquiryForm.name,
           phone: inquiryForm.phone,
+          contactEmail: inquiryForm.email,
           quantity: inquiryForm.quantity,
           notes: inquiryForm.remarks,
           designSummary: designSummary,
@@ -324,6 +326,7 @@ const DesignPage: FC = () => {
         quantity: '',
         name: '',
         phone: '',
+        email: '',
         remarks: '',
       })
       
@@ -342,6 +345,7 @@ const DesignPage: FC = () => {
       quantity: '',
       name: '',
       phone: '',
+      email: '',
       remarks: '',
     })
   }
@@ -610,7 +614,7 @@ const DesignPage: FC = () => {
         <DialogContent className="max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>填写询盘信息</DialogTitle>
-            <DialogDescription>完成设计后，请填写以下信息发起询盘</DialogDescription>
+            <DialogDescription>完成设计后，请填写以下信息发送询盘，我们将第一时间联系您！</DialogDescription>
           </DialogHeader>
           
           <View className="flex flex-col gap-4 py-4">
@@ -654,6 +658,21 @@ const DesignPage: FC = () => {
                   placeholder="请输入手机号码"
                   value={inquiryForm.phone}
                   onInput={(e: any) => setInquiryForm(prev => ({ ...prev, phone: e.detail.value }))}
+                />
+              </View>
+            </View>
+
+            {/* 联系邮箱 */}
+            <View>
+              <Text className="block text-sm font-medium text-gray-700 mb-2">
+                联系邮箱（选填）
+              </Text>
+              <View className="bg-gray-50 rounded-xl px-4 py-3">
+                <Input
+                  type="text"
+                  placeholder="请输入电子邮箱"
+                  value={inquiryForm.email}
+                  onInput={(e: any) => setInquiryForm(prev => ({ ...prev, email: e.detail.value }))}
                 />
               </View>
             </View>

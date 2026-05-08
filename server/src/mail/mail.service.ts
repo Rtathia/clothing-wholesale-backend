@@ -21,6 +21,7 @@ export class MailService {
   async sendInquiryEmail(toEmail: string, inquiryData: {
     contactName: string;
     phone: string;
+    contactEmail?: string;
     quantity: string;
     notes?: string;
     designSummary: string;
@@ -49,6 +50,12 @@ export class MailService {
           <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">联系方式</td>
           <td style="padding: 8px; border: 1px solid #ddd;">${inquiryData.phone}</td>
         </tr>
+        ${inquiryData.contactEmail ? `
+        <tr>
+          <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">联系邮箱</td>
+          <td style="padding: 8px; border: 1px solid #ddd;">${inquiryData.contactEmail}</td>
+        </tr>
+        ` : ''}
         <tr>
           <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">订购件数</td>
           <td style="padding: 8px; border: 1px solid #ddd;">${inquiryData.quantity}</td>
