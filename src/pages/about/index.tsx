@@ -1,9 +1,48 @@
 import { View, Text, ScrollView, Image } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import type { FC } from 'react'
+import { Network } from '@/network'
 import './index.css'
 
 const AboutPage: FC = () => {
+  // 管理员微信 OpenID 列表（只有这些用户点击"公司简介"才能进入后台）
+  const ADMIN_OPENIDS = [
+    // 管理员1 - 陈先生（示例，请替换为实际 OpenID）
+    'oXXXXX1',
+    // 管理员2 - 其他管理员
+    'oXXXXX2',
+  ]
+
+  // 检查是否是管理员
+  const checkAdminAndNavigate = async () => {
+    try {
+      // 调用微信登录获取 code
+      const loginRes = await Taro.login()
+      if (!loginRes.code) {
+        return // 无法获取 code，不跳转
+      }
+
+      // 调用后端 API 获取 OpenID
+      const res = await Network.request({
+        url: '/api/wx/openid',
+        method: 'POST',
+        data: { code: loginRes.code }
+      })
+
+      if (res.statusCode === 200 && res.data?.data?.openid) {
+        const openid = res.data.data.openid
+        // 检查是否是管理员
+        if (ADMIN_OPENIDS.includes(openid)) {
+          Taro.navigateTo({ url: '/pages/admin/index' })
+        } else {
+          Taro.showToast({ title: '无权限访问', icon: 'none' })
+        }
+      }
+    } catch (err) {
+      console.error('检查管理员权限失败:', err)
+    }
+  }
+
   // 复制微信号
   const handleCopyWechat = () => {
     Taro.setClipboardData({
@@ -55,7 +94,7 @@ const AboutPage: FC = () => {
             <View className="w-1 h-5 bg-blue-600 rounded-full mr-3" />
             <Text 
               className="text-lg font-bold text-gray-900"
-              onClick={() => Taro.navigateTo({ url: '/pages/admin/index' })}
+              onClick={checkAdminAndNavigate}
             >
               公司简介
             </Text>

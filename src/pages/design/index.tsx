@@ -604,7 +604,8 @@ const DesignPage: FC = () => {
             4. 拖动调整Logo位置{'\n'}
             5. 双指缩放调整Logo大小{'\n'}
             6. 可选：上传袖子Logo{'\n'}
-            7. 点击保存完成设计
+            7. 点击保存完成设计{'\n'}
+            8. 可填写表单发送询盘
           </Text>
         </View>
       </ScrollView>
