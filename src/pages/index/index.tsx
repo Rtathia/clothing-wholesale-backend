@@ -93,7 +93,16 @@ const HomePage: FC = () => {
       const res = await Network.request({
         url: '/api/shop/products',
       })
-      const allProducts = res.data.data || res.data || []
+      console.log('产品API响应:', res)
+      // 更安全的数据提取
+      const allProducts: Product[] = []
+      if (res.data?.data && Array.isArray(res.data.data)) {
+        allProducts.push(...res.data.data)
+      } else if (Array.isArray(res.data)) {
+        allProducts.push(...res.data)
+      } else if (res.data?.data) {
+        console.warn('产品数据格式异常:', typeof res.data.data, res.data.data)
+      }
       // 筛选出推荐产品
       const featured = allProducts.filter((p: Product) => FEATURED_PRODUCT_IDS.includes(p.id))
       setFeaturedProducts(featured)
