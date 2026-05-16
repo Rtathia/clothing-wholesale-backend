@@ -136,7 +136,8 @@ const CategoryPage: FC = () => {
       
       const res = await Network.request({ url })
       console.log('产品列表响应:', res.data)
-      setProducts(res.data.data || res.data || [])
+      const productData = res.data?.data || res.data || []
+      setProducts(Array.isArray(productData) ? productData : [])
     } catch (error) {
       console.error('获取产品列表失败:', error)
     } finally {
@@ -300,7 +301,7 @@ const CategoryPage: FC = () => {
           {(selectedCategoryId || selectedFabricId || selectedCraftId || searchKeyword) && (
             <View className="mb-3 px-3 py-2 bg-blue-50 rounded-lg">
               <Text className="block text-sm text-blue-600">
-                已筛选 {products.filter(p => p.name.toLowerCase().includes(searchKeyword.toLowerCase())).length} 件商品
+                已筛选 {(Array.isArray(products) ? products : []).filter(p => p.name.toLowerCase().includes(searchKeyword.toLowerCase())).length} 件商品
               </Text>
             </View>
           )}
@@ -315,7 +316,7 @@ const CategoryPage: FC = () => {
           {/* 商品列表 - 单列布局 */}
           {!loading && (
             <View className="flex flex-col gap-3">
-              {products
+              {(Array.isArray(products) ? products : [])
                 .filter(p => p.name.toLowerCase().includes(searchKeyword.toLowerCase()))
                 .map((product) => (
                 <View
